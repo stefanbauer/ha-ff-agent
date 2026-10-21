@@ -22,3 +22,19 @@ jobs:
         run: docker compose run --rm --no-deps --entrypoint python homeassistant -m unittest discover -s /tests -v
       - name: Check Home Assistant configuration
         run: docker compose run --rm --no-deps --entrypoint python homeassistant -m homeassistant --script check_config --config /config
+
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate Home Assistant integration metadata
+        uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate HACS integration repository
+        uses: hacs/action@main
+        with:
+          category: integration
+          comment: false
