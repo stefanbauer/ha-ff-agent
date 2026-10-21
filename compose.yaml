@@ -1,0 +1,37 @@
+name: ha-ff-agent-dev
+
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2026.10.2
+    restart: "no"
+    environment:
+      TZ: Europe/Berlin
+      PYTHONDONTWRITEBYTECODE: "1"
+    ports:
+      - "127.0.0.1:8124:8123"
+    volumes:
+      - ha_config:/config
+      - ./dev/configuration.yaml:/config/configuration.yaml:ro
+      - ./custom_components/ff_agent:/config/custom_components/ff_agent:ro
+      - ./tests:/tests:ro
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8123/', timeout=5).close()"
+      interval: 10s
+      timeout: 10s
+      start_period: 60s
+      retries: 12
+
+  ruff:
+    image: ghcr.io/astral-sh/ruff:0.14.1
+    profiles: [tools]
+    working_dir: /work
+    volumes:
+      - .:/work:ro
+    command: [check, --no-cache, .]
+
+volumes:
+  ha_config:

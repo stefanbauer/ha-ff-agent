@@ -1,0 +1,24 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose
+        run: docker compose config --quiet
+      - name: Lint
+        run: docker compose run --rm ruff
+      - name: Check formatting
+        run: docker compose run --rm ruff format --check --no-cache .
+      - name: Integration smoke test
+        run: docker compose run --rm --no-deps --entrypoint python homeassistant -m unittest discover -s /tests -v
+      - name: Check Home Assistant configuration
+        run: docker compose run --rm --no-deps --entrypoint python homeassistant -m homeassistant --script check_config --config /config

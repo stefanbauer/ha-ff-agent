@@ -1,0 +1,9 @@
+{
+  "domain": "ff_agent",
+  "name": "FF Agent",
+  "codeowners": ["@stefanbauer"],
+  "documentation": "https://github.com/stefanbauer/ha-ff-agent",
+  "integration_type": "service",
+  "issue_tracker": "https://github.com/stefanbauer/ha-ff-agent/issues",
+  "version": "0.0.0"
+}

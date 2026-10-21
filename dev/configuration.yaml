@@ -1,0 +1,21 @@
+# Deliberately minimal: no device/network discovery or real FF-Agent connection.
+homeassistant:
+  name: FF Agent Development
+  time_zone: Europe/Berlin
+  country: DE
+  unit_system: metric
+
+frontend:
+api:
+config:
+onboarding:
+history:
+
+logger:
+  default: warning
+  logs:
+    homeassistant.setup: info
+    custom_components.ff_agent: debug
+
+# Development-only loading of the no-op scaffold, not a public YAML config API.
+ff_agent:
