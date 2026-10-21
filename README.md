@@ -83,8 +83,10 @@ Settings are stored in your Home Assistant instance.
 
 Open **Configure** on your FF Agent service to see its secret webhook address.
 The dialog prefers your configured external **HTTPS** address. Without one,
-it shows a full local test URL and a warning. You can open that local URL in
-another browser tab after saving the service.
+it uses your current browser address, or the internal HA address as a fallback.
+The local-test warning appears only for local hostnames or non-public IP addresses,
+not for a public domain opened through a reverse proxy. This does not verify
+external reachability; always test delivery from FF-Agent.
 
 > [!WARNING]
 > Do not enter a localhost or private network address in FF-Agent: its servers
@@ -271,8 +273,11 @@ teilen. Die Einstellungen werden in deiner Home-Assistant-Instanz gespeichert.
 
 Öffne **Konfigurieren** an deinem FF-Agent-Dienst, um seine geheime Webhook-Adresse
 anzuzeigen. Der Dialog bevorzugt deine hinterlegte externe **HTTPS**-Adresse.
-Fehlt diese, siehst du eine vollständige lokale Testadresse mit Warnhinweis.
-Nach dem Speichern des Dienstes kannst du sie in einem anderen Browser-Tab öffnen.
+Fehlt diese, verwendet er die aktuelle Browseradresse oder ersatzweise die interne
+HA-Adresse. Der lokale Warnhinweis erscheint nur bei lokalen Hostnamen oder
+nichtöffentlichen IP-Adressen, nicht bei einer öffentlichen Domain hinter einem
+Reverse Proxy. Die externe Erreichbarkeit wird dadurch nicht geprüft; teste die
+Zustellung immer aus FF-Agent.
 
 > [!WARNING]
 > Keine localhost- oder private Netzwerkadresse in FF-Agent eintragen: Dessen

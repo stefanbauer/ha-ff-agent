@@ -22,6 +22,7 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.setup import async_setup_component
 from homeassistant.util.aiohttp import MockRequest
 from voluptuous import Invalid
+from yarl import URL
 
 REPLY_A = "00000000-0000-4000-8000-000000000001"
 REPLY_B = "12345678-9abc-4def-8123-000000000002"
@@ -421,6 +422,81 @@ class SetupTest(unittest.IsolatedAsyncioTestCase):
             )
         finally:
             current_request.reset(token)
+
+    async def test_webhook_warning_matches_displayed_host(self) -> None:
+        """Warn about local hosts, not missing external-URL configuration."""
+        entry, _ = await self.add_service("URL classification", REPLY_A, "CAR")
+        for base, local in (
+            ("https://ha.example.org", False),
+            ("https://ha.example.org:8443", False),
+            ("https://8.8.8.8", False),
+            ("http://localhost:8124", True),
+            ("https://ha.localhost", True),
+            ("http://127.0.0.1:8124", True),
+            ("https://192.168.12.34", True),
+            ("http://10.23.45.67:8123", True),
+            ("https://172.20.1.2", True),
+            ("http://[::1]:8123", True),
+            ("https://[fd12:3456::1]", True),
+            ("https://ha.local", True),
+            ("https://ha.lan", True),
+            ("https://ha.home.arpa", True),
+            ("https://homeassistant", True),
+        ):
+            with self.subTest(base=base):
+                token = current_request.set(
+                    make_mocked_request("POST", base + "/").clone(
+                        scheme=URL(base).scheme
+                    )
+                )
+                try:
+                    options = await self.hass.config_entries.options.async_init(
+                        entry.entry_id
+                    )
+                    self.assertEqual(options["step_id"], "local" if local else "init")
+                    self.assertEqual(
+                        options["description_placeholders"]["webhook_url"],
+                        f"{base}/api/webhook/{entry.data['webhook_id']}",
+                    )
+                    await self.hass.config_entries.options.async_configure(
+                        options["flow_id"], {}
+                    )
+                finally:
+                    current_request.reset(token)
+
+        token = current_request.set(
+            make_mocked_request("POST", "https://ha.example.org/").clone(scheme="https")
+        )
+        try:
+            flow = await self.hass.config_entries.flow.async_init(
+                "ff_agent", context={"source": "user"}
+            )
+            result = await self.hass.config_entries.flow.async_configure(
+                flow["flow_id"],
+                {"name": "External", "reply_id": REPLY_B, "transport": "car"},
+            )
+            self.assertEqual(result["step_id"], "webhook")
+            self.hass.config_entries.flow.async_abort(flow["flow_id"])
+        finally:
+            current_request.reset(token)
+
+        for base, local in (
+            ("https://ha.local", True),
+            ("https://alarms.example.org", False),
+        ):
+            with self.subTest(configured_external=base):
+                self.hass.config.external_url = base
+                options = await self.hass.config_entries.options.async_init(
+                    entry.entry_id
+                )
+                self.assertEqual(options["step_id"], "local" if local else "init")
+                self.assertEqual(
+                    options["description_placeholders"]["webhook_url"],
+                    f"{base}/api/webhook/{entry.data['webhook_id']}",
+                )
+                await self.hass.config_entries.options.async_configure(
+                    options["flow_id"], {}
+                )
 
     async def test_invalid_and_duplicate_reply_settings(self) -> None:
         """Reject complete URLs and duplicate IDs instead of extracting UUIDs."""

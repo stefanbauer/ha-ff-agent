@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Classify the displayed webhook host before showing the local-test warning;
+  public reverse-proxy URLs no longer receive it merely because HA has no
+  configured external URL. Keep warnings for local hostnames and non-public IPs.
 - Add per-organization alarm activity and reply-status entities, grouped under
   their own FF-Agent device, with English/German names and states.
 - End local alarms after four hours without extending the deadline for repeated

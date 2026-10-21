@@ -1,5 +1,6 @@
 """Configure independent FF Agent services without contacting FF Agent."""
 
+from ipaddress import ip_address
 from uuid import UUID
 
 import probatio as vol
@@ -17,15 +18,15 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
+from yarl import URL
 
 from .const import CONF_REPLY_ID, CONF_TRANSPORT, DOMAIN
 
 
 @callback
 def webhook_details(hass, webhook_id: str) -> tuple[str, bool]:
-    """Prefer external HTTPS; otherwise show a local test URL with a warning."""
+    """Prefer external HTTPS; classify the displayed host, not its URL source."""
     path = webhook.async_generate_path(webhook_id)
-    local_only = False
     try:
         base_url = get_url(
             hass,
@@ -35,11 +36,17 @@ def webhook_details(hass, webhook_id: str) -> tuple[str, bool]:
             allow_ip=False,
         )
     except NoURLAvailableError:
-        local_only = True
         if request := current_request.get():
             base_url = str(request.url.origin())
         else:
             base_url = get_url(hass, allow_external=False, allow_cloud=False)
+    host = URL(base_url).host.lower().rstrip(".")
+    try:
+        local_only = not ip_address(host).is_global
+    except ValueError:
+        local_only = "." not in host or host.endswith(
+            (".localhost", ".local", ".lan", ".home", ".home.arpa", ".internal")
+        )
     return f"{base_url}{path}", local_only
 
 

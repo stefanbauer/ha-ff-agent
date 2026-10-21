@@ -113,10 +113,12 @@ Entfernen oder Deaktivieren des Dienstes deaktiviert seinen Webhook.
 
 Der Dialog verwendet Home Assistants externe **HTTPS**-URL aus
 **Einstellungen → System → Netzwerk**. Fehlt diese, wird die aktuelle Browseradresse
-inklusive Port als Basis für eine vollständige lokale Test-URL verwendet. Ohne
+inklusive Port als Basis für die vollständige Webhook-URL verwendet. Ohne
 aktuellen HTTP-Aufruf dient die konfigurierte/erkannte interne URL als Fallback.
-Ein Warnkasten erklärt, dass lokale URLs nicht bei FF-Agent eingetragen werden
-dürfen, und verweist auf öffentlichen HTTPS-Zugang, etwa über Nabu Casa.
+Die Warnung hängt vom angezeigten Host ab, nicht davon, woher die URL stammt:
+Lokale Hostnamen und nichtöffentliche IPv4-/IPv6-Adressen erhalten sie;
+öffentliche Domains oder IPs nicht. DNS und externe Erreichbarkeit werden nicht
+geprüft. Der Warnkasten verweist auf öffentlichen HTTPS-Zugang, etwa über Nabu Casa.
 Nach Änderung der externen URL den Dialog erneut öffnen.
 Eine konfigurierte URL allein schafft noch keine Erreichbarkeit: Dafür braucht es
 einen geeigneten externen Zugang zu Home Assistant. Dieses Projekt richtet keinen
