@@ -2,8 +2,11 @@
   "domain": "ff_agent",
   "name": "FF Agent",
   "codeowners": ["@stefanbauer"],
+  "config_flow": true,
+  "dependencies": ["http", "webhook"],
   "documentation": "https://github.com/stefanbauer/ha-ff-agent",
   "integration_type": "service",
+  "iot_class": "cloud_push",
   "issue_tracker": "https://github.com/stefanbauer/ha-ff-agent/issues",
-  "version": "0.0.0"
+  "version": "0.1.0"
 }

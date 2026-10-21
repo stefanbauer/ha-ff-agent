@@ -1,0 +1,103 @@
+{
+  "title": "FF Agent",
+  "config": {
+    "step": {
+      "user": {
+        "title": "FF-Agent-Dienst hinzufügen",
+        "description": "Lege pro Organisation einen eigenen Dienst an. Deinen persönlichen Rückmeldelink findest du in FF-Agent → Persönliches Profil → Weblinks für Einsatzmeldung. Kopiere nur die UUID zwischen /missionreplies/ und /accept (oder /reject), nicht die vollständige URL oder deren Parameter. Die ID ist geheim: Wer sie kennt, kann in deinem Namen antworten. Nur ausdrücklich aufgerufene Rückmeldeaktionen kontaktieren FF-Agent. Bei einer Zusage werden deine Home-Assistant-Zuhause-Koordinaten und die Anreiseart gesendet.",
+        "data": {
+          "name": "Name der Organisation",
+          "reply_id": "Rückmelde-UUID",
+          "transport": "Standard-Anreiseart"
+        },
+        "data_description": {
+          "name": "Zum Beispiel: Feuerwehr Berglern",
+          "reply_id": "Nur die UUID im Format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. Speicherung nur in Home Assistant.",
+          "transport": "Wird bei ausdrücklicher Zusage zusammen mit deinen Home-Assistant-Zuhause-Koordinaten gesendet."
+        }
+      },
+      "reconfigure": {
+        "title": "FF-Agent-Dienst bearbeiten",
+        "description": "Ändere die Einstellungen der Organisation. Der Webhook bleibt unverändert. Deine persönliche UUID findest du in FF-Agent → Persönliches Profil → Weblinks für Einsatzmeldung, zwischen /missionreplies/ und /accept (oder /reject). Nur die UUID eingeben, keine vollständige URL. Das Speichern sendet nichts. Erst eine ausdrückliche Zusage sendet Anreiseart und Home-Assistant-Zuhause-Koordinaten.",
+        "data": {
+          "name": "Name der Organisation",
+          "reply_id": "Rückmelde-UUID",
+          "transport": "Standard-Anreiseart"
+        }
+      },
+      "webhook": {
+        "title": "Alarm-Webhook",
+        "description": "Speichere den Dienst, um seinen eigenen Webhook zu aktivieren:\n\n`{webhook_url}`\n\nIm generischen Webhook von FF-Agent: GET und HTTPS. Kein Body, keine Basic-Authentifizierung oder zusätzlichen Header. Über Konfigurieren am Dienst kannst du diese Adresse erneut öffnen.\n\nAdresse geheim halten: Schon das Öffnen, auch durch Linkvorschauen, löst ein Alarmsignal aus. Jeder GET erzeugt ff_agent_alarm. Der Einsatz-Sensor bleibt höchstens vier Stunden aktiv; weitere Hooks verlängern das nicht. Rückmeldeaktionen sind manuell. Einsatzdetails und Dashboard-Karte fehlen noch. Kein Ersatz für die offizielle Alarmierung. Tatsächlichen Ereignisempfang prüfen, nicht nur HTTP 200."
+      },
+      "webhook_local": {
+        "title": "Alarm-Webhook — lokaler Test",
+        "description": "Speichere den Dienst und öffne diese Adresse zum Testen in einem anderen Browser-Tab:\n\n`{webhook_url}`\n\n> [!WARNING]\n> Nur lokale Testadresse — nicht in FF-Agent eintragen. Localhost und private Netzwerkadressen sind für FF-Agent nicht erreichbar. Richte für echte Zustellung einen öffentlichen HTTPS-Zugang ein, etwa Home Assistant Cloud von Nabu Casa, und hinterlege die externe URL unter Einstellungen → System → Netzwerk. Es wird kein öffentlicher Zugang automatisch eingerichtet.\n\nÖffne danach Konfigurieren erneut, um die externe Adresse zu erhalten. In FF-Agent: GET und HTTPS, ohne Body, Basic-Authentifizierung oder zusätzliche Header.\n\nAdresse geheim halten: Schon das Öffnen, auch durch Linkvorschauen, löst ein Alarmsignal aus. Jeder GET erzeugt ff_agent_alarm mit config_entry_id. Der Einsatz-Sensor bleibt höchstens vier Stunden aktiv; weitere Hooks verlängern das nicht. Rückmeldeaktionen sind manuell. Einsatzdetails und Dashboard-Karte fehlen noch. Ereignisempfang unter Entwicklerwerkzeuge → Ereignisse prüfen; HTTP 200 allein reicht nicht. Kein Ersatz für die offizielle Alarmierung."
+      }
+    },
+    "error": {
+      "name_required": "Gib einen Namen für die Organisation ein.",
+      "invalid_reply_id": "Gib nur eine gültige UUID mit Bindestrichen ein, keine vollständige URL.",
+      "already_configured": "Diese Rückmelde-ID ist bereits in einem anderen Dienst eingerichtet."
+    },
+    "abort": {
+      "already_configured": "Diese Rückmelde-ID wurde bereits in einem anderen Einrichtungsdialog hinzugefügt.",
+      "reconfigure_successful": "Die Einstellungen des Dienstes wurden aktualisiert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Alarm-Webhook",
+        "description": "Die geheime Webhook-Adresse dieses Dienstes:\n\n`{webhook_url}`\n\nGenerischer FF-Agent-Webhook: GET und HTTPS. Kein Body, keine Basic-Authentifizierung oder zusätzlichen Header. Adresse geheim halten: Schon das Öffnen, auch durch Linkvorschauen, löst ein Alarmsignal aus.\n\nJeder GET erzeugt ff_agent_alarm mit config_entry_id. Der Einsatz-Sensor bleibt höchstens vier Stunden aktiv; weitere Hooks verlängern das nicht. Rückmeldeaktionen sind manuell. Einsatzdetails werden nicht verarbeitet. Zum Empfangstest unter Entwicklerwerkzeuge → Ereignisse auf ff_agent_alarm lauschen. HTTP 200 allein bestätigt keine Zustellung.\n\nName, Rückmelde-ID und Anreiseart kannst du über Neu konfigurieren im Menü des Dienstes ändern."
+      },
+      "local": {
+        "title": "Alarm-Webhook — lokaler Test",
+        "description": "Öffne diese Adresse zum Empfangstest in einem anderen Browser-Tab:\n\n`{webhook_url}`\n\n> [!WARNING]\n> Nur lokale Testadresse — nicht in FF-Agent eintragen. Localhost und private Netzwerkadressen sind für FF-Agent nicht erreichbar. Richte für echte Zustellung einen öffentlichen HTTPS-Zugang ein, etwa Home Assistant Cloud von Nabu Casa, und hinterlege die externe URL unter Einstellungen → System → Netzwerk. Es wird kein öffentlicher Zugang automatisch eingerichtet.\n\nÖffne diesen Dialog danach erneut, um die externe Adresse zu erhalten. In FF-Agent: GET und HTTPS, ohne Body, Basic-Authentifizierung oder zusätzliche Header.\n\nAdresse geheim halten: Schon das Öffnen, auch durch Linkvorschauen, löst ein Alarmsignal aus. Unter Entwicklerwerkzeuge → Ereignisse auf ff_agent_alarm lauschen. Die config_entry_id bezeichnet diesen Dienst; HTTP 200 allein bestätigt keinen Empfang. Der Einsatz-Sensor bleibt höchstens vier Stunden aktiv; weitere Hooks verlängern das nicht. Rückmeldeaktionen sind manuell. Einsatzdetails und Dashboard-Karte fehlen noch.\n\nDie Einstellungen lassen sich über Neu konfigurieren im Menü des Dienstes ändern."
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "alarm_active": { "name": "Einsatz aktiv" }
+    },
+    "sensor": {
+      "reply_status": {
+        "name": "Rückmeldestatus",
+        "state": {
+          "pending": "Offen",
+          "accepted": "Zugesagt",
+          "rejected": "Abgesagt"
+        }
+      }
+    }
+  },
+  "services": {
+    "accept": {
+      "name": "Zusagen",
+      "description": "Zusage für den ausgewählten aktiven Einsatz mit konfigurierter Anreiseart und Home-Assistant-Zuhause-Koordinaten senden. Kontaktiert FF-Agent."
+    },
+    "reject": {
+      "name": "Absagen",
+      "description": "Absage für den ausgewählten aktiven Einsatz senden und ihn nach erfolgreicher Übermittlung lokal beenden. Keine Koordinaten oder Anreiseart werden gesendet. Kontaktiert FF-Agent."
+    },
+    "end_alarm": {
+      "name": "Einsatz beenden",
+      "description": "Nur den ausgewählten lokalen Einsatz zurücksetzen. Behält die letzte Rückmeldung bei und sendet nichts an FF-Agent."
+    }
+  },
+  "exceptions": {
+    "no_local_alarm": { "message": "Für diese Organisation ist kein lokaler Einsatz aktiv. Es wurde keine Rückmeldung gesendet." },
+    "no_active_incident": { "message": "FF-Agent meldet keinen passenden aktiven Einsatz. Lokal wurde keine erfolgreiche Rückmeldung vermerkt." },
+    "reply_unconfirmed": { "message": "Die Zustellung der Rückmeldung ist unbestätigt. Der vorherige Status bleibt erhalten. Prüfe FF-Agent vor einem erneuten Versuch; die Anfrage könnte bereits verarbeitet worden sein." },
+    "alarm_changed": { "message": "Der lokale Einsatz wurde während des Sendens beendet oder geändert. Sein Rückmeldestatus wurde nicht überschrieben. Prüfe FF-Agent vor einem erneuten Versuch." }
+  },
+  "selector": {
+    "transport": {
+      "options": {
+        "car": "Auto",
+        "bicycle": "Fahrrad",
+        "feet": "Zu Fuß"
+      }
+    }
+  }
+}

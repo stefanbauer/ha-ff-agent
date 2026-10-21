@@ -1,0 +1,15 @@
+accept:
+  target:
+    entity:
+      integration: ff_agent
+      domain: binary_sensor
+reject:
+  target:
+    entity:
+      integration: ff_agent
+      domain: binary_sensor
+end_alarm:
+  target:
+    entity:
+      integration: ff_agent
+      domain: binary_sensor
