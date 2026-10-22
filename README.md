@@ -9,13 +9,13 @@
 Connect multiple fire departments or organizations to Home Assistant, each with
 its own name, personal reply UUID, default transport and alarm webhook.
 
-**Work in progress:** Receive alarms, track local alarm/reply states, and explicitly
-send acceptances or rejections. Incident details and a dedicated dashboard card
-are **not implemented yet**. This integration does not replace official alarm systems.
+Receive alarms, see their status on the included dashboard card, and explicitly
+send acceptances or rejections. **Work in progress:** incident details are not
+supported. This integration does not replace official alarm systems.
 
 ### Installation
 
-Requires **Home Assistant 2026.10.2 or newer**. Version **0.1.1** is an early
+Requires **Home Assistant 2026.10.2 or newer**. Version **0.2.0** is an early
 development version, not a finished alarm integration. HACS is optional.
 Before testing on your main Home Assistant instance, create a backup. Keep your
 official alarm channels enabled; test reply actions only when a real response is intended.
@@ -58,18 +58,58 @@ If you are using the prepared local development instance, the integration is
 already installed. Start with **Add integration** or **Add service** on its page.
 No YAML configuration is needed to add your services.
 
-### Update to 0.1.1
+### Update to 0.2.0
 
 HACS periodically checks for new GitHub releases and offers updates even for this
 custom repository; inclusion in the default catalog is not required.
 If you previously installed `main`, open FF Agent in HACS, use **Redownload** and
-select release **0.1.1** instead of `main` to follow versioned releases.
+select release **0.2.0** instead of `main` to follow versioned releases.
 For a manual installation, replace the integration folder with the files from the
 [latest release](https://github.com/stefanbauer/ha-ff-agent/releases/latest).
-Restart Home Assistant, then reload your browser to see the new action names.
+Restart Home Assistant, then reload your browser to load the included card.
 Existing organizations, webhooks, buttons and automations remain valid:
 `ff_agent.accept`, `ff_agent.reject` and `ff_agent.end_alarm` have not changed.
 See the [changelog](CHANGELOG.md) for the changes in this version.
+
+### Dashboard card
+
+The **FF Agent** card is included in the integration: no second repository,
+frontend download or manual resource registration is needed.
+
+1. After restarting Home Assistant, reload your browser.
+2. Edit your dashboard, choose **Add card**, and search for **FF Agent**.
+3. Select the organization's **Alarm active** entity. Optionally give the card
+   a custom name. Add one card per organization.
+
+An active incident appears in a prominent red banner. The two primary buttons,
+**Accept** and **Reject**, send a real reply to FF-Agent. After accepting, Accept
+disappears; Reject remains available to change your reply. A successfully sent
+rejection also closes the local alarm. **End local alarm** is a separate, quieter
+button below: it closes the local alarm without sending or changing a reply.
+Without an active incident, the card is calm and all action buttons are hidden.
+While an action is running, all buttons are disabled. Errors are shown on the
+card, without automatic retries or closing the alarm.
+
+The footer always shows the last successfully sent reply and its time, including
+after an alarm ends or a new one starts. Nothing is fabricated: before the first
+reply it says so; older replies from before 0.2.0 may have no recorded time.
+Replies sent directly from the FF-Agent app are not synchronized.
+
+To show the card only during an incident, use Home Assistant's standard card
+**Visibility** settings with the **Alarm active** entity set to **On**.
+
+YAML dashboards can use the same card (replace the example entity):
+
+```yaml
+type: custom:ff-agent-card
+entity: binary_sensor.feuerwehr_berglern_alarm_active
+# Optional: name: Feuerwehr Berglern
+```
+
+The matching reply sensor is selected automatically from the same organization's
+device, including when entities have been renamed. Both entities must be enabled.
+Card text follows your Home Assistant language (English/German), and dates use
+your language and Home Assistant time zone. Light and dark themes are supported.
 
 ### Add an organization
 
@@ -159,8 +199,9 @@ is active. **Accept incident** and **Reject incident** are never triggered autom
 After HTTP 2xx, the selected reply is recorded locally, including when FF-Agent
 reports “no matching active incident”; Reject also ends the local alarm. Accept
 does not activate or end an alarm. A failed or unconfirmed request retains the
-previous state. These are standard Home Assistant actions, usable in automations,
-scripts and a future card; no scenes are needed.
+previous state. These are standard Home Assistant actions, usable in automations
+and scripts; no scenes are needed. Only the dashboard card requires an active
+local alarm before offering its buttons.
 
 > [!WARNING]
 > **Accepted/Rejected records the last successfully HTTP-delivered action from
@@ -190,8 +231,11 @@ you intend a real response.
 - **A complete reply URL is rejected:** enter only the UUID as described above.
 - **No alarm arrives:** check the service is enabled, the webhook uses GET and
   the external HTTPS address is reachable. Use the event reception test above;
-  there is no incident-details display or dedicated dashboard card yet.
-- **No accept/reject card:** use the actions above; the dedicated card comes later.
+  incident details are not displayed.
+- **The card is missing:** restart Home Assistant after installation and reload
+  the browser. Search for FF Agent in Add card, or use the YAML example above.
+- **The card shows unavailable:** select the correct organization's Alarm active
+  entity and make sure both its alarm and reply entities are enabled.
 - **A Forecast device appears:** this belongs to the separate Met.no weather
   integration, not FF Agent. The name “FF Agent Development” is the test instance's
   name, not the owner of every entity.
@@ -212,14 +256,13 @@ integration, not an official FF-Agent product. See [third-party notices](NOTICES
 Verbinde mehrere Feuerwehren oder Organisationen mit Home Assistant, jeweils mit
 eigenem Namen, persönlicher Rückmelde-UUID, Standard-Anreiseart und Alarm-Webhook.
 
-**In Entwicklung:** Alarme empfangen, lokale Einsatz-/Rückmeldestatus verfolgen
-und ausdrücklich Zusagen oder Absagen senden. Einsatzdetails und eine eigene
-Dashboard-Karte sind **noch nicht implementiert**. Die Integration ersetzt keine
-offiziellen Alarmierungswege.
+Alarme empfangen, ihren Status auf der mitgelieferten Dashboard-Karte sehen und
+ausdrücklich Zusagen oder Absagen senden. **In Entwicklung:** Einsatzdetails
+werden nicht unterstützt. Die Integration ersetzt keine offiziellen Alarmierungswege.
 
 ### Installation
 
-Voraussetzung: **Home Assistant 2026.10.2 oder neuer**. Version **0.1.1** ist eine
+Voraussetzung: **Home Assistant 2026.10.2 oder neuer**. Version **0.2.0** ist eine
 frühe Entwicklungsversion, keine fertige Alarmintegration. HACS ist optional.
 Erstelle vor einem Test in deiner produktiven Home-Assistant-Instanz ein Backup.
 Lass die offiziellen Alarmierungswege aktiv; teste Rückmeldeaktionen nur, wenn
@@ -266,20 +309,63 @@ In der vorbereiteten lokalen Entwicklungsinstanz ist die Integration bereits
 installiert. Beginne direkt mit **Integration hinzufügen** oder **Dienst hinzufügen**
 auf ihrer Seite. Zum Hinzufügen der Dienste ist keine YAML-Konfiguration nötig.
 
-### Auf 0.1.1 aktualisieren
+### Auf 0.2.0 aktualisieren
 
 HACS prüft regelmäßig auf neue GitHub-Releases und bietet auch für dieses
 benutzerdefinierte Repository Updates an; die Aufnahme in den Standardkatalog ist
 dafür nicht erforderlich. Falls du bisher `main` installiert hast, öffne FF Agent
-in HACS, nutze **Erneut herunterladen** und wähle Release **0.1.1** statt `main`,
+in HACS, nutze **Erneut herunterladen** und wähle Release **0.2.0** statt `main`,
 um versionierten Releases zu folgen. Bei manueller Installation ersetze den
 Integrationsordner durch die Dateien aus dem
 [neuesten Release](https://github.com/stefanbauer/ha-ff-agent/releases/latest).
-Starte Home Assistant neu und lade danach den Browser neu, damit die neuen
-Aktionsnamen angezeigt werden.
+Starte Home Assistant neu und lade danach den Browser neu, damit die mitgelieferte
+Karte geladen wird.
 Bestehende Organisationen, Webhooks, Buttons und Automationen bleiben gültig:
 `ff_agent.accept`, `ff_agent.reject` und `ff_agent.end_alarm` sind unverändert.
 Die Änderungen dieser Version stehen im [Changelog](CHANGELOG.md).
+
+### Dashboard-Karte
+
+Die **FF Agent**-Karte ist in der Integration enthalten: kein zweites Repository,
+kein separater Frontend-Download und kein manuelles Eintragen einer Ressource.
+
+1. Lade nach dem Home-Assistant-Neustart den Browser neu.
+2. Bearbeite dein Dashboard, wähle **Karte hinzufügen** und suche nach **FF Agent**.
+3. Wähle die Entität **Einsatz aktiv** der Organisation. Optional kannst du einen
+   eigenen Kartennamen vergeben. Füge je Organisation eine Karte hinzu.
+
+Bei einem aktiven Einsatz erscheint ein auffälliges rotes Alarmband. Die beiden
+Hauptbuttons **Zusagen** und **Absagen** senden eine echte Rückmeldung an FF-Agent.
+Nach einer Zusage verschwindet Zusagen; Absagen bleibt zum Ändern der Rückmeldung
+verfügbar. Eine erfolgreich gesendete Absage schließt auch den lokalen Einsatz.
+**Einsatz lokal beenden** steht darunter als separate, zurückhaltende Aktion: Sie
+schließt den lokalen Einsatz, ohne eine Rückmeldung zu senden oder zu ändern.
+Ohne aktiven Einsatz ist die Karte ruhig und alle Aktionsbuttons sind ausgeblendet.
+Während einer Aktion sind alle Buttons gesperrt. Fehler werden in der Karte
+angezeigt, ohne automatische Wiederholung und ohne den Einsatz zu schließen.
+
+Im Fußbereich stehen immer die letzte erfolgreich gesendete Rückmeldung und ihr
+Zeitpunkt, auch nach dem Einsatzende oder beim nächsten Alarm. Es wird nichts
+erfunden: Vor der ersten Rückmeldung steht dort ein entsprechender Hinweis;
+bei alten Rückmeldungen vor 0.2.0 fehlt gegebenenfalls der erfasste Zeitpunkt.
+Direkt in der FF-Agent-App gesendete Rückmeldungen werden nicht synchronisiert.
+
+Soll die Karte nur während eines Einsatzes erscheinen, nutze die normalen
+**Sichtbarkeit**-Einstellungen der Karte mit der Entität **Einsatz aktiv** auf **An**.
+
+Für YAML-Dashboards funktioniert dieselbe Karte (Beispielentität ersetzen):
+
+```yaml
+type: custom:ff-agent-card
+entity: binary_sensor.feuerwehr_berglern_alarm_active
+# Optional: name: Feuerwehr Berglern
+```
+
+Der passende Rückmeldesensor wird automatisch am Gerät derselben Organisation
+gefunden, auch nach einer Umbenennung der Entitäten. Beide Entitäten müssen
+aktiviert sein. Die Texte folgen deiner Home-Assistant-Sprache (Englisch/Deutsch),
+Datumsangaben deiner Sprache und der Home-Assistant-Zeitzone. Helle und dunkle
+Themes werden unterstützt.
 
 ### Organisation hinzufügen
 
@@ -376,8 +462,9 @@ einen Webhook aufgerufen. Nach HTTP 2xx wird die gewählte Rückmeldung lokal
 gespeichert, auch wenn FF-Agent „kein passender Einsatz aktiv“ meldet; Absagen
 beendet zusätzlich den lokalen Einsatz. Zusagen aktiviert oder beendet keinen
 Einsatz. Bei fehlgeschlagener oder unbestätigter Übertragung bleibt der vorherige
-Zustand erhalten. Das sind normale Home-Assistant-Aktionen für Automationen,
-Skripte und eine spätere Karte; Szenen werden dafür nicht benötigt.
+Zustand erhalten. Das sind normale Home-Assistant-Aktionen für Automationen und
+Skripte; Szenen werden dafür nicht benötigt. Nur die Dashboard-Karte bietet ihre
+Buttons ausschließlich bei einem aktiven lokalen Einsatz an.
 
 > [!WARNING]
 > **Zugesagt/Abgesagt zeigt die letzte erfolgreich per HTTP übermittelte Aktion
@@ -408,8 +495,11 @@ antworten möchtest.
 - **Die Rückmelde-URL wird abgelehnt:** Gib nur die UUID wie oben beschrieben ein.
 - **Kein Alarm kommt an:** Prüfe, ob der Dienst aktiviert ist, der Webhook GET
   verwendet und die externe HTTPS-Adresse erreichbar ist. Nutze den Ereignistest
-  oben; es gibt noch keine Einsatzdetailanzeige oder eigene Dashboard-Karte.
-- **Keine Zusage-/Absage-Karte:** Nutze die Aktionen oben; die eigene Karte folgt später.
+  oben; Einsatzdetails werden nicht angezeigt.
+- **Die Karte fehlt:** Starte Home Assistant nach der Installation neu und lade
+  den Browser neu. Suche unter Karte hinzufügen nach FF Agent oder nutze das YAML-Beispiel.
+- **Die Karte zeigt nicht verfügbar:** Wähle die Entität Einsatz aktiv der richtigen
+  Organisation und prüfe, ob Einsatz- und Rückmeldeentität aktiviert sind.
 - **Ein Gerät Forecast erscheint:** Es gehört zur separaten Wetterintegration
   Met.no, nicht zu FF Agent. „FF Agent Development“ ist der Name der Testinstanz,
   nicht die zuständige Integration jeder Entität.

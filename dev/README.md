@@ -9,7 +9,8 @@ jeweils mit persönlicher Rückmelde-ID, Standard-Anreiseart und eigenem Alarm-W
 Pro Dienst gibt es einen Einsatz-Binary-Sensor, einen Rückmeldestatus und die
 Aktionen Einsatz zusagen, Einsatz absagen und Einsatz beenden. Nur ausdrückliche Zu-/Absagen
 senden FF-Agent-Anfragen; automatisierte Tests verwenden ausschließlich Mock-HTTP.
-**Noch keine Einsatzdetails oder eigene Dashboard-Karte.** Version `0.1.1` ist eine Entwicklungsversion;
+Die Dashboard-Karte wird mitgeliefert; Einsatzdetails werden nicht verarbeitet.
+Version `0.2.0` ist eine Entwicklungsversion;
 `1.0.0` bleibt einer ersten vollständigen, stabilen Version vorbehalten.
 Die Integrationsoberfläche ist standardmäßig Englisch, bei deutscher HA-Sprache Deutsch.
 
@@ -36,7 +37,7 @@ werden; eine Aufnahme in den Standardkatalog ist nicht erfolgt. HACS wird für d
 lokale Entwicklung weder installiert noch benötigt. Code und eigene Dokumentation
 stehen unter der [MIT-Lizenz](../LICENSE); das Logo ist davon ausgenommen, siehe
 [Rechtehinweise](../NOTICES.md). Eine Namensnennung ersetzt keine Nutzungserlaubnis.
-Version 0.1.1 ist zum kontrollierten Praxistest vorgesehen. Neue Versionen werden
+Version 0.2.0 ist zum kontrollierten Praxistest vorgesehen. Neue Versionen werden
 nach erfolgreicher Prüfung als reguläres GitHub-Release veröffentlicht. Tag und
 Manifest-Version stimmen überein und tragen kein `v`-Präfix, zum Beispiel `0.1.1`.
 HACS nutzt diese Releases für versionierte Updates, auch bei Custom-Repositories.
@@ -159,6 +160,35 @@ werden nicht erneut aktiviert. Nach vier Stunden endet der lokale Alarm über
 einen nativen UTC-Timer; beim Entladen wird der Timer beendet und der Zustand
 gespeichert. Entfernen des Dienstes löscht seinen zusätzlichen Zustand.
 
+Zusätzlich speichern `last_reply_status` und `last_reply_at` die letzte erfolgreich
+übermittelte Entscheidung samt UTC-Zeit unabhängig vom aktuellen Alarm. Der
+Rückmeldesensor veröffentlicht beide als Attribute. Neue Alarme und lokales
+Beenden löschen sie nicht. Bei alten Zuständen wird ein bekannter Rückmeldestatus
+übernommen, aber kein nicht erfasster Zeitpunkt erfunden.
+
+### Mitgelieferte Dashboard-Karte
+
+`frontend/ff-agent-card.js` ist ein natives Custom Element ohne Build-Schritt oder
+externe Laufzeitabhängigkeiten. `async_setup` stellt das Modul und das vorhandene
+Brand-Icon als statische Dateien bereit und registriert es einmal über Home
+Assistants `frontend.add_extra_js_url`. Die Manifest-Version im Modul-URL-Parameter
+verhindert veralteten Browsercache nach einem Release. Kein Eingriff in
+Lovelace-Ressourcen oder Dashboard-Speicher, keine zweite HACS-Installation.
+
+Die Karte wählt den Rückmeldesensor anhand von Gerätezuordnung, Integration und
+Übersetzungsschlüssel aus dem Frontend-Entity-Registry-Abonnement. Umbenannte
+Entity-IDs und mehrere Organisationen bleiben dadurch korrekt zugeordnet.
+Aktionsaufrufe zielen ausschließlich auf den gewählten Binary-Sensor. Nur die
+Karte sperrt ihre Buttons ohne aktiven Alarm; die Backend-Aktionen bleiben unverändert.
+Sichtbarkeit verwendet den nativen Karteneditor, keine eigene Konfigurationsoption.
+
+Nach Python-Änderungen neu starten und nach JavaScript-Änderungen den Browser
+ohne Cache neu laden. Syntaxprüfung mit Node.js:
+
+```sh
+node --check custom_components/ff_agent/frontend/ff-agent-card.js
+```
+
 Weitere Hooks im aktiven Zeitfenster erzeugen Ereignisse, setzen aber weder die
 Frist noch den Rückmeldestatus zurück. Ohne Einsatz-ID ist eine Unterscheidung
 zwischen Wiederholung und neuem Einsatz nicht möglich; diese Einschränkung steht
@@ -257,7 +287,8 @@ docker compose exec -T homeassistant python -m homeassistant --script check_conf
 Die Tests laden die gemountete Integration mit temporärem HA-Zustand und prüfen
 mehrere Dienste, UUID-Validierung, Änderungen, Webhook-Zuordnung und Deaktivierung.
 Zusätzlich werden die Vier-Stunden-Grenze, Wiederherstellung, manuelles Beenden,
-Rückmeldeparameter, Fehlerantworten und verspätete Antworten geprüft. HTTPX
+Rückmeldeparameter, Fehlerantworten, verspätete Antworten, persistente Rückmeldehistorie
+und die automatische Modul-Auslieferung geprüft. HTTPX
 MockTransport verhindert echte Zu-/Absagen; Testkoordinaten und UUIDs sind synthetisch.
 Die GET-/POST-/HEAD-Prüfung verwendet HTTP auf Loopback-Port 18123 innerhalb
 des Containers; sie ändert weder Benutzer noch Dienste der laufenden Instanz.

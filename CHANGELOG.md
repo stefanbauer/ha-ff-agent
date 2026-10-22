@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.0
+
+- Bundle an FF Agent dashboard card with the integration, automatically loaded
+  without a separate HACS frontend repository or manual resource setup.
+- Show a prominent red active-alarm banner and a calm idle state. Offer Accept
+  and Reject as primary replies only during a local active alarm; hide Accept
+  after acceptance. Separate End local alarm from real FF-Agent replies.
+  Disable buttons while sending, show errors without retries, and target the
+  selected organization. Backend actions remain usable independently of alarm activity.
+- Always show the last delivered reply and its timestamp. Persist this history
+  across new alarms, manual endings and restarts; preserve older recorded replies
+  without inventing missing historical timestamps.
+- Support English/German, light/dark themes, narrow cards, a native entity/name
+  editor and standard Home Assistant card visibility settings.
+- Document card setup and upgrades in English and German.
+
 ## 0.1.1
 
 - Rename the reply actions to **Accept incident** / **Reject incident** in English
