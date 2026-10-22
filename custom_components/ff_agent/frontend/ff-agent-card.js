@@ -8,7 +8,6 @@ const TEXT = {
     rejected: "Rejected",
     accept: "Accept",
     reject: "Reject",
-    replies: "Reply to FF-Agent",
     end_alarm: "End local alarm",
     acceptLabel: "Accept incident",
     rejectLabel: "Reject incident",
@@ -30,7 +29,6 @@ const TEXT = {
     rejected: "Abgesagt",
     accept: "Zusagen",
     reject: "Absagen",
-    replies: "Rückmeldung an FF-Agent",
     end_alarm: "Einsatz lokal beenden",
     acceptLabel: "Einsatz zusagen",
     rejectLabel: "Einsatz absagen",
@@ -72,40 +70,41 @@ class FFAgentCard extends HTMLElement {
           background: var(--ha-card-background, var(--card-background-color, #fff));
           color: var(--primary-text-color, #202124);
           border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, #dfe3e8);
-          border-radius: var(--ha-card-border-radius, 16px);
+          border-radius: var(--ha-card-border-radius, 12px);
           box-shadow: var(--ha-card-box-shadow, none);
           font-family: var(--ha-font-family-body, var(--paper-font-body1_-_font-family, Roboto, sans-serif));
         }
-        header { display: flex; align-items: center; gap: 12px; padding: 20px 22px; }
-        header img { width: 30px; height: 34px; object-fit: contain; flex-shrink: 0; }
+        header { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+        header img { width: 24px; height: 28px; object-fit: contain; flex-shrink: 0; }
         .identity { min-width: 0; flex: 1; }
-        h2 { font-size: 16px; font-weight: 600; line-height: 1.4; margin: 0; overflow-wrap: anywhere; }
-        .signal { display: flex; align-items: center; gap: 16px; padding: 22px; background: var(--secondary-background-color, #f3f5f7); }
-        .signal svg { width: 38px; height: 38px; flex: 0 0 38px; }
-        .signal h3 { font-size: 22px; font-weight: 700; line-height: 1.2; letter-spacing: -.025em; margin: 0; }
+        h2 { font-size: var(--mush-card-primary-font-size, 14px); font-weight: var(--mush-card-primary-font-weight, 500); line-height: 20px; margin: 0; overflow-wrap: anywhere; }
+        .signal { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--secondary-background-color, #f3f5f7); }
+        #signal-icon { display: flex; flex-shrink: 0; }
+        .signal svg { width: 24px; height: 24px; }
+        .signal h3 { font-size: 14px; font-weight: 500; line-height: 20px; margin: 0; }
         ha-card[data-active] .signal { background: var(--ff-red); color: #fff; }
-        ha-card[data-active] .signal h3 { font-size: 28px; }
-        .actions { padding: 18px 22px 12px; }
-        .reply-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .reply-actions button { flex: 1; }
-        button { min-height: 72px; padding: 12px 4px; border-radius: 10px; border: 1px solid var(--divider-color, #dfe3e8); background: transparent; color: inherit; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; }
-        button svg { width: 22px; height: 22px; }
+        ha-card[data-active] .signal h3 { font-size: 20px; line-height: 24px; font-weight: 600; }
+        .actions { padding: 12px; }
+        .reply-actions { display: flex; gap: 8px; }
+        .reply-actions button { flex: 1; min-width: 0; }
+        button { min-height: var(--mush-control-height, 42px); padding: 8px 12px; border-radius: var(--mush-control-border-radius, 12px); border: 1px solid var(--divider-color, #dfe3e8); background: transparent; color: inherit; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; }
+        button svg { width: 20px; height: 20px; flex-shrink: 0; }
         button[data-action="accept"] { background: var(--ff-green); border-color: var(--ff-green); color: #fff; }
         button[data-action="reject"] { color: var(--error-color, #b91c28); border-color: currentColor; }
-        button.local-action { width: 100%; min-height: 44px; margin-top: 14px; padding: 12px 0 0; flex-direction: row; border-width: 1px 0 0; border-radius: 0; font-size: 12px; font-weight: 500; color: var(--secondary-text-color, #616873); }
-        button.local-action svg { width: 17px; height: 17px; flex-shrink: 0; }
+        button.local-action { width: 100%; margin-top: 8px; background: var(--secondary-background-color, #f3f5f7); }
+        button.local-action svg { width: 18px; height: 18px; }
         button:hover:not(:disabled) { filter: brightness(.92); }
         button:focus-visible { outline: 3px solid var(--primary-color, #03a9f4); outline-offset: 3px; }
         button:disabled { cursor: wait; opacity: .55; }
-        footer { display: flex; gap: 12px; align-items: flex-start; padding: 18px 22px 21px; border-top: 1px solid var(--divider-color, #e4e7eb); }
-        .history-icon { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--secondary-background-color, #f3f5f7); color: var(--secondary-text-color, #616873); flex-shrink: 0; }
-        .history-icon svg { width: 17px; height: 17px; }
+        footer { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--divider-color, #e4e7eb); }
+        .history-icon { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--secondary-background-color, #f3f5f7); color: var(--secondary-text-color, #616873); flex-shrink: 0; }
+        .history-icon svg { width: 16px; height: 16px; }
         .history-copy { min-width: 0; flex: 1; }
         .caption { color: var(--secondary-text-color, #616873); font-size: 11px; font-weight: 500; }
-        .decision { margin-top: 4px; font-size: 15px; font-weight: 600; }
-        time { display: block; margin-top: 5px; font-size: 12px; line-height: 1.5; color: var(--secondary-text-color, #616873); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
-        .empty { font-size: 13px; font-weight: 400; color: var(--secondary-text-color, #616873); line-height: 1.5; }
-        .error { margin: 0 22px 18px; padding: 12px; border: 1px solid var(--error-color, #b91c28); border-radius: 8px; color: var(--error-color, #b91c28); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+        .decision { margin-top: 2px; font-size: 14px; font-weight: 500; line-height: 20px; }
+        time { display: block; max-width: 45%; text-align: end; font-size: 11px; line-height: 16px; color: var(--secondary-text-color, #616873); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+        .empty { font-size: 12px; font-weight: 400; color: var(--secondary-text-color, #616873); line-height: 16px; }
+        .error { margin: 0 12px 12px; padding: 10px; border: 1px solid var(--error-color, #b91c28); border-radius: 8px; color: var(--error-color, #b91c28); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
       </style>
       <ha-card>
         <header><img src="/ff_agent/icon.png" alt=""><div class="identity"><h2 id="name"></h2></div></header>
@@ -114,7 +113,6 @@ class FFAgentCard extends HTMLElement {
           <h3 id="status"></h3>
         </section>
         <div class="actions" id="actions" hidden>
-          <div class="caption" id="reply-label"></div>
           <div class="reply-actions">
             ${["accept", "reject"].map((action) => `<button type="button" data-action="${action}">${svg(action)}<span></span></button>`).join("")}
           </div>
@@ -123,7 +121,8 @@ class FFAgentCard extends HTMLElement {
         <p class="error" id="error" role="alert" hidden></p>
         <footer>
           <span class="history-icon" id="history-icon">${svg("accept")}</span>
-          <div class="history-copy"><div class="caption" id="history-label"></div><div class="decision" id="decision"></div><time id="time"></time></div>
+          <div class="history-copy"><div class="caption" id="history-label"></div><div class="decision" id="decision"></div></div>
+          <time id="time"></time>
         </footer>
       </ha-card>`;
     for (const button of this.shadowRoot.querySelectorAll("button")) {
@@ -211,7 +210,6 @@ class FFAgentCard extends HTMLElement {
     this.shadowRoot.getElementById("signal-icon").innerHTML = svg(
       !available ? "unavailable" : active ? "alarm" : "idle",
     );
-    this._text("reply-label", this._t("replies"));
     this.shadowRoot.getElementById("actions").hidden = !active;
     for (const button of this.shadowRoot.querySelectorAll("button")) {
       const action = button.dataset.action;
@@ -289,7 +287,7 @@ class FFAgentCard extends HTMLElement {
   }
 
   getCardSize() {
-    return this._active() ? 7 : 5;
+    return this._active() ? 6 : 3;
   }
   getGridOptions() {
     return { columns: 12, rows: "auto", min_columns: 6 };

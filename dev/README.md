@@ -10,7 +10,7 @@ Pro Dienst gibt es einen Einsatz-Binary-Sensor, einen Rückmeldestatus und die
 Aktionen Einsatz zusagen, Einsatz absagen und Einsatz beenden. Nur ausdrückliche Zu-/Absagen
 senden FF-Agent-Anfragen; automatisierte Tests verwenden ausschließlich Mock-HTTP.
 Die Dashboard-Karte wird mitgeliefert; Einsatzdetails werden nicht verarbeitet.
-Version `0.2.0` ist eine Entwicklungsversion;
+Version `0.2.1` ist eine Entwicklungsversion;
 `1.0.0` bleibt einer ersten vollständigen, stabilen Version vorbehalten.
 Die Integrationsoberfläche ist standardmäßig Englisch, bei deutscher HA-Sprache Deutsch.
 
@@ -37,7 +37,7 @@ werden; eine Aufnahme in den Standardkatalog ist nicht erfolgt. HACS wird für d
 lokale Entwicklung weder installiert noch benötigt. Code und eigene Dokumentation
 stehen unter der [MIT-Lizenz](../LICENSE); das Logo ist davon ausgenommen, siehe
 [Rechtehinweise](../NOTICES.md). Eine Namensnennung ersetzt keine Nutzungserlaubnis.
-Version 0.2.0 ist zum kontrollierten Praxistest vorgesehen. Neue Versionen werden
+Version 0.2.1 ist zum kontrollierten Praxistest vorgesehen. Neue Versionen werden
 nach erfolgreicher Prüfung als reguläres GitHub-Release veröffentlicht. Tag und
 Manifest-Version stimmen überein und tragen kein `v`-Präfix, zum Beispiel `0.1.1`.
 HACS nutzt diese Releases für versionierte Updates, auch bei Custom-Repositories.

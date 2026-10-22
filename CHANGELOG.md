@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.1
+
+- Make the bundled card more compact and closer to Mushroom's typography,
+  spacing and control sizes without requiring Mushroom to be installed.
+- Place the last-reply timestamp on the right, reduce the header/logo and alarm
+  banner height, and use shorter horizontal reply buttons.
+- Give End local alarm a full-width neutral button below Accept/Reject and
+  remove the redundant reply-section caption in English and German.
+- Preserve action targeting, alarm/reply behavior and all existing configuration.
+
 ## 0.2.0
 
 - Bundle an FF Agent dashboard card with the integration, automatically loaded

@@ -15,7 +15,7 @@ supported. This integration does not replace official alarm systems.
 
 ### Installation
 
-Requires **Home Assistant 2026.10.2 or newer**. Version **0.2.0** is an early
+Requires **Home Assistant 2026.10.2 or newer**. Version **0.2.1** is an early
 development version, not a finished alarm integration. HACS is optional.
 Before testing on your main Home Assistant instance, create a backup. Keep your
 official alarm channels enabled; test reply actions only when a real response is intended.
@@ -58,12 +58,12 @@ If you are using the prepared local development instance, the integration is
 already installed. Start with **Add integration** or **Add service** on its page.
 No YAML configuration is needed to add your services.
 
-### Update to 0.2.0
+### Update to 0.2.1
 
 HACS periodically checks for new GitHub releases and offers updates even for this
 custom repository; inclusion in the default catalog is not required.
 If you previously installed `main`, open FF Agent in HACS, use **Redownload** and
-select release **0.2.0** instead of `main` to follow versioned releases.
+select release **0.2.1** instead of `main` to follow versioned releases.
 For a manual installation, replace the integration folder with the files from the
 [latest release](https://github.com/stefanbauer/ha-ff-agent/releases/latest).
 Restart Home Assistant, then reload your browser to load the included card.
@@ -90,8 +90,8 @@ Without an active incident, the card is calm and all action buttons are hidden.
 While an action is running, all buttons are disabled. Errors are shown on the
 card, without automatic retries or closing the alarm.
 
-The footer always shows the last successfully sent reply and its time, including
-after an alarm ends or a new one starts. Nothing is fabricated: before the first
+The compact footer shows the last successfully sent reply with its time on the
+right, including after an alarm ends or a new one starts. Nothing is fabricated: before the first
 reply it says so; older replies from before 0.2.0 may have no recorded time.
 Replies sent directly from the FF-Agent app are not synchronized.
 
@@ -262,7 +262,7 @@ werden nicht unterstützt. Die Integration ersetzt keine offiziellen Alarmierung
 
 ### Installation
 
-Voraussetzung: **Home Assistant 2026.10.2 oder neuer**. Version **0.2.0** ist eine
+Voraussetzung: **Home Assistant 2026.10.2 oder neuer**. Version **0.2.1** ist eine
 frühe Entwicklungsversion, keine fertige Alarmintegration. HACS ist optional.
 Erstelle vor einem Test in deiner produktiven Home-Assistant-Instanz ein Backup.
 Lass die offiziellen Alarmierungswege aktiv; teste Rückmeldeaktionen nur, wenn
@@ -309,12 +309,12 @@ In der vorbereiteten lokalen Entwicklungsinstanz ist die Integration bereits
 installiert. Beginne direkt mit **Integration hinzufügen** oder **Dienst hinzufügen**
 auf ihrer Seite. Zum Hinzufügen der Dienste ist keine YAML-Konfiguration nötig.
 
-### Auf 0.2.0 aktualisieren
+### Auf 0.2.1 aktualisieren
 
 HACS prüft regelmäßig auf neue GitHub-Releases und bietet auch für dieses
 benutzerdefinierte Repository Updates an; die Aufnahme in den Standardkatalog ist
 dafür nicht erforderlich. Falls du bisher `main` installiert hast, öffne FF Agent
-in HACS, nutze **Erneut herunterladen** und wähle Release **0.2.0** statt `main`,
+in HACS, nutze **Erneut herunterladen** und wähle Release **0.2.1** statt `main`,
 um versionierten Releases zu folgen. Bei manueller Installation ersetze den
 Integrationsordner durch die Dateien aus dem
 [neuesten Release](https://github.com/stefanbauer/ha-ff-agent/releases/latest).
@@ -344,9 +344,9 @@ Ohne aktiven Einsatz ist die Karte ruhig und alle Aktionsbuttons sind ausgeblend
 Während einer Aktion sind alle Buttons gesperrt. Fehler werden in der Karte
 angezeigt, ohne automatische Wiederholung und ohne den Einsatz zu schließen.
 
-Im Fußbereich stehen immer die letzte erfolgreich gesendete Rückmeldung und ihr
-Zeitpunkt, auch nach dem Einsatzende oder beim nächsten Alarm. Es wird nichts
-erfunden: Vor der ersten Rückmeldung steht dort ein entsprechender Hinweis;
+Im kompakten Fußbereich stehen die letzte erfolgreich gesendete Rückmeldung und
+rechts ihr Zeitpunkt, auch nach dem Einsatzende oder beim nächsten Alarm. Es wird
+nichts erfunden: Vor der ersten Rückmeldung steht dort ein entsprechender Hinweis;
 bei alten Rückmeldungen vor 0.2.0 fehlt gegebenenfalls der erfasste Zeitpunkt.
 Direkt in der FF-Agent-App gesendete Rückmeldungen werden nicht synchronisiert.
 
