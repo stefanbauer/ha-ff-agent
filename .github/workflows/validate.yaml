@@ -18,6 +18,8 @@ jobs:
         run: docker compose run --rm ruff
       - name: Check formatting
         run: docker compose run --rm ruff format --check --no-cache .
+      - name: Check bundled card JavaScript
+        run: node --check custom_components/ff_agent/frontend/ff-agent-card.js
       - name: Integration smoke test
         run: docker compose run --rm --no-deps --entrypoint python homeassistant -m unittest discover -s /tests -v
       - name: Check Home Assistant configuration

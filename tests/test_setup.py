@@ -19,6 +19,7 @@ from homeassistant.config_entries import ConfigEntries
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.storage import Store
 from homeassistant.setup import async_setup_component
 from homeassistant.util.aiohttp import MockRequest
 from voluptuous import Invalid
@@ -78,6 +79,20 @@ class SetupTest(unittest.IsolatedAsyncioTestCase):
         self.assertIn("ff_agent", self.hass.config.components)
         self.assertEqual(self.hass.states.async_entity_ids("ff_agent"), [])
         self.assertNotIn("ff_agent", self.hass.services.async_services())
+        async with ClientSession() as client:
+            with patch(
+                "homeassistant.components.frontend.onboarding.async_is_onboarded",
+                return_value=True,
+            ):
+                async with client.get("http://127.0.0.1:18123/") as response:
+                    self.assertIn(
+                        "/ff_agent/ff-agent-card.js?v=", await response.text()
+                    )
+            async with client.get(
+                "http://127.0.0.1:18123/ff_agent/ff-agent-card.js"
+            ) as response:
+                self.assertEqual(response.status, 200)
+                self.assertIn("ff-agent-card", await response.text())
 
     async def add_service(self, name, reply_id, transport):
         """Complete the same flow used by the native frontend."""
@@ -322,6 +337,56 @@ class SetupTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.hass.states.get(ids["sensor"]).state, "rejected")
         self.assertEqual(len(self.provider_requests), 4)
 
+    async def test_last_reply_history_survives_new_alarm_and_reload(self) -> None:
+        """Keep a real reply timestamp, never an alarm/reset/failure timestamp."""
+        entry, _ = await self.add_service("History", REPLY_A, "CAR")
+        sensor = self.entity_ids(entry)["sensor"]
+        self.assertIsNone(self.hass.states.get(sensor).attributes["last_reply_at"])
+        self.provider_handler = lambda request: httpx.Response(200, text="OK")
+        accepted_at = datetime(2026, 10, 22, 9, 42, tzinfo=UTC)
+        with patch(
+            "custom_components.ff_agent.coordinator.dt_util.utcnow",
+            return_value=accepted_at,
+        ):
+            await self.action("accept", entry)
+        await self.alarm(entry)
+        state = self.hass.states.get(sensor)
+        self.assertEqual(state.state, "pending")
+        self.assertEqual(state.attributes["last_reply_status"], "accepted")
+        self.assertEqual(state.attributes["last_reply_at"], accepted_at)
+        self.provider_handler = lambda request: httpx.Response(503)
+        with self.assertRaises(HomeAssistantError):
+            await self.action("reject", entry)
+        await self.action("end_alarm", entry)
+        self.assertTrue(await self.hass.config_entries.async_reload(entry.entry_id))
+        await self.hass.async_block_till_done()
+        state = self.hass.states.get(sensor)
+        self.assertEqual(state.attributes["last_reply_status"], "accepted")
+        self.assertEqual(state.attributes["last_reply_at"], accepted_at)
+        self.provider_handler = lambda request: httpx.Response(200, text="OK")
+        rejected_at = accepted_at + timedelta(minutes=7)
+        with patch(
+            "custom_components.ff_agent.coordinator.dt_util.utcnow",
+            return_value=rejected_at,
+        ):
+            await self.action("reject", entry)
+        self.assertTrue(await self.hass.config_entries.async_reload(entry.entry_id))
+        await self.hass.async_block_till_done()
+        state = self.hass.states.get(sensor)
+        self.assertEqual(state.attributes["last_reply_status"], "rejected")
+        self.assertEqual(state.attributes["last_reply_at"], rejected_at)
+
+        # Upgrade old persisted state without inventing a historical timestamp.
+        self.assertTrue(await self.hass.config_entries.async_unload(entry.entry_id))
+        await Store(self.hass, 1, f"ff_agent.{entry.entry_id}").async_save(
+            {"reply_status": "accepted", "expires_at": None}
+        )
+        self.assertTrue(await self.hass.config_entries.async_setup(entry.entry_id))
+        await self.hass.async_block_till_done()
+        state = self.hass.states.get(sensor)
+        self.assertEqual(state.attributes["last_reply_status"], "accepted")
+        self.assertIsNone(state.attributes["last_reply_at"])
+
     async def test_inflight_reply_does_not_overwrite_a_new_alarm(self) -> None:
         """A late HTTP response must not resolve a newer local alarm."""
         entry, _ = await self.add_service("Race", REPLY_A, "CAR")
@@ -359,6 +424,11 @@ class SetupTest(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(
                     self.hass.states.get(self.entity_ids(entry)["sensor"]).state,
                     "pending",
+                )
+                self.assertIsNone(
+                    self.hass.states.get(self.entity_ids(entry)["sensor"]).attributes[
+                        "last_reply_at"
+                    ]
                 )
                 self.assertEqual(
                     self.hass.states.get(self.entity_ids(entry)["binary_sensor"]).state,

@@ -22,3 +22,11 @@ class FFAgentReply(FFAgentEntity, SensorEntity):
     def native_value(self) -> str:
         """Return the local reply state; failures never manufacture success."""
         return self.coordinator.reply_status
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Retain the last delivered decision independently of the current alarm."""
+        return {
+            "last_reply_status": self.coordinator.last_reply_status,
+            "last_reply_at": self.coordinator.last_reply_at,
+        }

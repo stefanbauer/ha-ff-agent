@@ -1,13 +1,17 @@
 """FF Agent service configuration and minimal alarm webhook reception."""
 
+from pathlib import Path
+
 from aiohttp import web
-from homeassistant.components import webhook
+from homeassistant.components import frontend, webhook
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_WEBHOOK_ID, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.loader import async_get_integration
 
 from .const import DOMAIN, EVENT_ALARM
 from .coordinator import FFAgentCoordinator
@@ -17,7 +21,24 @@ PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    """Keep the development bootstrap compatible; services use config entries."""
+    """Serve and load one bundled card, shared by all organizations."""
+    root = Path(__file__).parent
+    await hass.http.async_register_static_paths(
+        [
+            StaticPathConfig(
+                "/ff_agent/ff-agent-card.js",
+                str(root / "frontend" / "ff-agent-card.js"),
+                True,
+            ),
+            StaticPathConfig(
+                "/ff_agent/icon.png", str(root / "brand" / "icon.png"), True
+            ),
+        ]
+    )
+    integration = await async_get_integration(hass, DOMAIN)
+    frontend.add_extra_js_url(
+        hass, f"/ff_agent/ff-agent-card.js?v={integration.version}"
+    )
     return True
 
 

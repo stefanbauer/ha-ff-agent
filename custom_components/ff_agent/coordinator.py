@@ -28,6 +28,8 @@ class FFAgentCoordinator(DataUpdateCoordinator[None]):
         self.entry = entry
         self.expires_at = None
         self.reply_status = "pending"
+        self.last_reply_status = None
+        self.last_reply_at = None
         self._store = Store(hass, 1, f"{DOMAIN}.{entry.entry_id}")
         self._cancel_expiry = None
         self._reply_lock = asyncio.Lock()
@@ -46,6 +48,11 @@ class FFAgentCoordinator(DataUpdateCoordinator[None]):
         """Restore the original deadline rather than starting another four hours."""
         if data := await self._store.async_load():
             self.reply_status = data["reply_status"]
+            self.last_reply_status = data.get("last_reply_status")
+            if self.last_reply_status is None and self.reply_status != "pending":
+                self.last_reply_status = self.reply_status
+            if data.get("last_reply_at"):
+                self.last_reply_at = dt_util.parse_datetime(data["last_reply_at"])
             if data["expires_at"]:
                 self.expires_at = dt_util.parse_datetime(data["expires_at"])
         if self.alarm_active:
@@ -96,6 +103,10 @@ class FFAgentCoordinator(DataUpdateCoordinator[None]):
         return {
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
             "reply_status": self.reply_status,
+            "last_reply_status": self.last_reply_status,
+            "last_reply_at": (
+                self.last_reply_at.isoformat() if self.last_reply_at else None
+            ),
         }
 
     @callback
@@ -140,6 +151,8 @@ class FFAgentCoordinator(DataUpdateCoordinator[None]):
                     translation_domain=DOMAIN, translation_key="alarm_changed"
                 )
             self.reply_status = "accepted" if decision == "accept" else "rejected"
+            self.last_reply_status = self.reply_status
+            self.last_reply_at = dt_util.utcnow()
             if decision == "reject":
                 self.async_end_alarm()
             else:
