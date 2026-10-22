@@ -74,11 +74,11 @@
   "services": {
     "accept": {
       "name": "Zusagen",
-      "description": "Zusage für den ausgewählten aktiven Einsatz mit konfigurierter Anreiseart und Home-Assistant-Zuhause-Koordinaten senden. Kontaktiert FF-Agent."
+      "description": "Zusage für die ausgewählte Organisation mit konfigurierter Anreiseart und Home-Assistant-Zuhause-Koordinaten senden, auch ohne aktiven Einsatz. Kontaktiert FF-Agent."
     },
     "reject": {
       "name": "Absagen",
-      "description": "Absage für den ausgewählten aktiven Einsatz senden und ihn nach erfolgreicher Übermittlung lokal beenden. Keine Koordinaten oder Anreiseart werden gesendet. Kontaktiert FF-Agent."
+      "description": "Absage für die ausgewählte Organisation senden, auch ohne aktiven Einsatz, und den lokalen Einsatz nach HTTP-Übermittlung beenden. Keine Koordinaten oder Anreiseart werden gesendet. Kontaktiert FF-Agent."
     },
     "end_alarm": {
       "name": "Einsatz beenden",
@@ -86,8 +86,6 @@
     }
   },
   "exceptions": {
-    "no_local_alarm": { "message": "Für diese Organisation ist kein lokaler Einsatz aktiv. Es wurde keine Rückmeldung gesendet." },
-    "no_active_incident": { "message": "FF-Agent meldet keinen passenden aktiven Einsatz. Lokal wurde keine erfolgreiche Rückmeldung vermerkt." },
     "reply_unconfirmed": { "message": "Die Zustellung der Rückmeldung ist unbestätigt. Der vorherige Status bleibt erhalten. Prüfe FF-Agent vor einem erneuten Versuch; die Anfrage könnte bereits verarbeitet worden sein." },
     "alarm_changed": { "message": "Der lokale Einsatz wurde während des Sendens beendet oder geändert. Sein Rückmeldestatus wurde nicht überschrieben. Prüfe FF-Agent vor einem erneuten Versuch." }
   },

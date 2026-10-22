@@ -163,10 +163,12 @@ mit `pending`. Beenden erhält die letzte Rückmeldung.
 
 Die Entity-Aktionen `ff_agent.accept`, `ff_agent.reject` und `ff_agent.end_alarm`
 zielen auf den Einsatz-Binary-Sensor oder das zugehörige Organisationsgerät.
-Das lokale Beenden sendet nichts. Zu-/Absagen setzen einen aktiven lokalen Alarm
-voraus. Zusagen lassen ihn aktiv; eine erfolgreich gesendete Absage ruft zusätzlich
-das lokale Beenden auf und behält `rejected` bei. Fehler oder unbestätigte Absagen
-lassen den Alarm aktiv.
+Das lokale Beenden sendet nichts und ist auch bei bereits beendetem Alarm möglich.
+Zu-/Absagen setzen weder einen lokalen noch einen passenden FF-Agent-Einsatz
+voraus. Zusagen ändern die Alarmaktivität nicht; eine per HTTP 2xx übermittelte
+Absage ruft zusätzlich das lokale Beenden auf und behält `rejected` bei. Dies gilt
+auch für die Antwort „kein passender Einsatz aktiv“. Fehler oder unbestätigte
+Übertragungen lassen den bisherigen Zustand unverändert.
 
 Die bestätigten persönlichen Weblinks aus der Gladys-Implementierung sind:
 
@@ -175,11 +177,11 @@ Die bestätigten persönlichen Weblinks aus der Gladys-Implementierung sind:
 - Absage: GET `https://www.ff-agent.com/app2/missionreplies/{UUID}/reject`, ohne Query.
 
 HA verwaltet den HTTPX-Client. Insgesamt fünf Sekunden Timeout, keine automatischen
-Wiederholungen oder Weiterleitungen. Erst HTTP 2xx setzt den lokalen Status,
-außer bei `Updated MissionStatus: kein passender Einsatz aktiv`. Andere Fehler
-und unklare Übermittlung lassen den alten Status stehen. Der Status ist kein
-zurückgelesener Providerstatus. Eine Antwort auf einen inzwischen beendeten oder
-ersetzten Alarm darf dessen Nachfolger nicht überschreiben.
+Wiederholungen oder Weiterleitungen. HTTP 2xx setzt den lokalen Status unabhängig
+vom Antworttext; das bestätigt nur die HTTP-Übermittlung, nicht die Zuordnung zu
+einem FF-Agent-Einsatz. Fehler und unklare Übermittlung lassen den alten Status
+stehen. Der Status ist kein zurückgelesener Providerstatus. Eine Antwort auf einen
+inzwischen beendeten oder ersetzten Alarm darf dessen Nachfolger nicht überschreiben.
 
 ### Betrieb
 

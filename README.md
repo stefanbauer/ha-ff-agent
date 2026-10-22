@@ -141,18 +141,22 @@ organization's **Alarm active** entity (or its FF-Agent device):
 - **FF Agent: End alarm** (`ff_agent.end_alarm`): turns the local binary sensor
   off immediately, retaining the reply status. **Sends nothing to FF-Agent.**
 
-Accept and Reject require an active local alarm and are never triggered
-automatically by a webhook. Acceptance leaves the alarm active; a failed or
-unconfirmed rejection does not end it either. These are standard Home Assistant
-actions, usable in automations, scripts and a future card; no scenes are needed.
+All three actions work whether or not a local alarm or matching FF-Agent incident
+is active. Accept and Reject are never triggered automatically by a webhook.
+After HTTP 2xx, the selected reply is recorded locally, including when FF-Agent
+reports “no matching active incident”; Reject also ends the local alarm. Accept
+does not activate or end an alarm. A failed or unconfirmed request retains the
+previous state. These are standard Home Assistant actions, usable in automations,
+scripts and a future card; no scenes are needed.
 
 > [!WARNING]
 > **Accepted/Rejected records the last successfully HTTP-delivered action from
 > this Home Assistant instance, not a status read back from FF-Agent.** Changes
-> made in the FF-Agent app are not synchronized. Errors, timeouts, redirects and
-> FF-Agent's “no matching active incident” response do not record a successful
-> reply. Check FF-Agent before trying again: a failed/uncertain request might
-> already have been processed. There are no automatic retries or redirects.
+> made in the FF-Agent app are not synchronized. A local reply does not confirm
+> that FF-Agent assigned it to an incident. Errors, timeouts and redirects retain
+> the previous state. Check FF-Agent before trying again: a failed/uncertain
+> request might already have been processed. There are no automatic retries or
+> redirects.
 
 To test safely, trigger the local webhook and then use **End alarm**; neither
 operation sends a reply. Only test Accept/Reject when you intend a real response.
@@ -337,20 +341,24 @@ auswählen:
   Binary-Sensor sofort aus und behält den Rückmeldestatus bei.
   **Sendet nichts an FF-Agent.**
 
-Zusagen und Absagen erfordern einen aktiven lokalen Einsatz und werden nie
-automatisch durch einen Webhook aufgerufen. Eine Zusage lässt den Einsatz aktiv;
-eine fehlgeschlagene oder unbestätigte Absage beendet ihn ebenfalls nicht.
-Das sind normale Home-Assistant-Aktionen für Automationen, Skripte und eine
-spätere Karte; Szenen werden dafür nicht benötigt.
+Alle drei Aktionen funktionieren unabhängig davon, ob lokal oder bei FF-Agent ein
+passender Einsatz aktiv ist. Zusagen und Absagen werden nie automatisch durch
+einen Webhook aufgerufen. Nach HTTP 2xx wird die gewählte Rückmeldung lokal
+gespeichert, auch wenn FF-Agent „kein passender Einsatz aktiv“ meldet; Absagen
+beendet zusätzlich den lokalen Einsatz. Zusagen aktiviert oder beendet keinen
+Einsatz. Bei fehlgeschlagener oder unbestätigter Übertragung bleibt der vorherige
+Zustand erhalten. Das sind normale Home-Assistant-Aktionen für Automationen,
+Skripte und eine spätere Karte; Szenen werden dafür nicht benötigt.
 
 > [!WARNING]
 > **Zugesagt/Abgesagt zeigt die letzte erfolgreich per HTTP übermittelte Aktion
 > dieser Home-Assistant-Instanz, keinen aus FF-Agent zurückgelesenen Status.**
-> Änderungen in der FF-Agent-App werden nicht synchronisiert. Fehler, Timeouts,
-> Weiterleitungen und die FF-Agent-Antwort „kein passender Einsatz aktiv“ vermerken
-> keine erfolgreiche Rückmeldung. Vor erneutem Senden FF-Agent prüfen: Eine
-> fehlgeschlagene/unklare Anfrage könnte bereits verarbeitet worden sein.
-> Es gibt keine automatischen Wiederholungen oder Weiterleitungen.
+> Änderungen in der FF-Agent-App werden nicht synchronisiert. Eine lokale
+> Rückmeldung bestätigt nicht, dass FF-Agent sie einem Einsatz zugeordnet hat.
+> Fehler, Timeouts und Weiterleitungen lassen den vorherigen Zustand unverändert.
+> Vor erneutem Senden FF-Agent prüfen: Eine fehlgeschlagene/unklare Anfrage könnte
+> bereits verarbeitet worden sein. Es gibt keine automatischen Wiederholungen
+> oder Weiterleitungen.
 
 Gefahrloser Test: lokalen Webhook auslösen und **Einsatz beenden** aufrufen;
 beides sendet keine Rückmeldung. Zusage/Absage nur testen, wenn du wirklich

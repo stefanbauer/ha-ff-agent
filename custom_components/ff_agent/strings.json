@@ -74,11 +74,11 @@
   "services": {
     "accept": {
       "name": "Accept",
-      "description": "Send acceptance for the selected active alarm using the configured transport and Home Assistant home coordinates. This contacts FF-Agent."
+      "description": "Send acceptance for the selected organization using the configured transport and Home Assistant home coordinates, even without an active alarm. This contacts FF-Agent."
     },
     "reject": {
       "name": "Reject",
-      "description": "Send rejection for the selected active alarm and end it locally after successful delivery. No coordinates or transport are sent. This contacts FF-Agent."
+      "description": "Send rejection for the selected organization, even without an active alarm, and end the local alarm after HTTP delivery. No coordinates or transport are sent. This contacts FF-Agent."
     },
     "end_alarm": {
       "name": "End alarm",
@@ -86,8 +86,6 @@
     }
   },
   "exceptions": {
-    "no_local_alarm": { "message": "There is no active local alarm for this organization. No reply was sent." },
-    "no_active_incident": { "message": "FF-Agent reports no matching active incident. No successful reply has been recorded locally." },
     "reply_unconfirmed": { "message": "Reply delivery is unconfirmed. The previous status was retained. Check FF-Agent before trying again; the request may already have been processed." },
     "alarm_changed": { "message": "The local alarm ended or changed while sending. Its reply status was not overwritten. Check FF-Agent before trying again." }
   },

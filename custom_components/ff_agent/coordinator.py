@@ -107,11 +107,7 @@ class FFAgentCoordinator(DataUpdateCoordinator[None]):
         """Send once, with no redirects/retries or optimistic status changes."""
         deadline = self.expires_at
         async with self._reply_lock:
-            if not self.alarm_active:
-                raise ServiceValidationError(
-                    translation_domain=DOMAIN, translation_key="no_local_alarm"
-                )
-            if self.expires_at != deadline:
+            if self.expires_at != deadline or self._unloaded:
                 raise ServiceValidationError(
                     translation_domain=DOMAIN, translation_key="alarm_changed"
                 )
@@ -135,19 +131,11 @@ class FFAgentCoordinator(DataUpdateCoordinator[None]):
                 raise HomeAssistantError(
                     translation_domain=DOMAIN, translation_key="reply_unconfirmed"
                 ) from None
-            body = response.text.strip()
-            if (
-                200 <= response.status_code < 300
-                and body == "Updated MissionStatus: kein passender Einsatz aktiv"
-            ):
-                raise ServiceValidationError(
-                    translation_domain=DOMAIN, translation_key="no_active_incident"
-                )
             if not 200 <= response.status_code < 300:
                 raise HomeAssistantError(
                     translation_domain=DOMAIN, translation_key="reply_unconfirmed"
                 )
-            if self.expires_at != deadline or not self.alarm_active:
+            if self.expires_at != deadline or self._unloaded:
                 raise HomeAssistantError(
                     translation_domain=DOMAIN, translation_key="alarm_changed"
                 )

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Allow Accept, Reject and End alarm without an active local or matching FF-Agent
+  incident. An HTTP 2xx reply, including “kein passender Einsatz aktiv”, records
+  the selected local decision; Reject also ends the local alarm. Preserve state
+  on transport/HTTP errors and prevent late replies from changing a newer alarm.
 - Classify the displayed webhook host before showing the local-test warning;
   public reverse-proxy URLs no longer receive it merely because HA has no
   configured external URL. Keep warnings for local hostnames and non-public IPs.
@@ -14,7 +18,7 @@
   Successful rejection also ends the local alarm and retains the rejected status;
   failed or unconfirmed rejection leaves it active. Ending an alarm manually is
   local only and retains its last reply.
-- Keep reply status unchanged on failed/unconfirmed requests or no active incident,
+- Keep reply status unchanged on failed/unconfirmed requests,
   never follow redirects or retry automatically, and prevent late replies from
   overwriting a newer alarm.
 - Add multiple named FF Agent services with a UI configuration flow, editable

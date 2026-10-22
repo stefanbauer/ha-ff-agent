@@ -203,8 +203,6 @@ class SetupTest(unittest.IsolatedAsyncioTestCase):
         ids = self.entity_ids(first)
         self.hass.config.latitude = 48.125
         self.hass.config.longitude = -11.875
-        with self.assertRaises(HomeAssistantError):
-            await self.action("accept", first)
         self.assertEqual(self.provider_requests, [])
         self.provider_handler = lambda request: httpx.Response(200, text="OK")
         await self.alarm(first)
@@ -251,9 +249,6 @@ class SetupTest(unittest.IsolatedAsyncioTestCase):
             httpx.Response(
                 500, text="Cannot update status of Person. Internal Error - Check URL!"
             ),
-            httpx.Response(
-                200, text="Updated MissionStatus: kein passender Einsatz aktiv"
-            ),
         ):
             with self.subTest(status=response.status_code):
                 self.provider_handler = lambda request, response=response: response
@@ -279,36 +274,96 @@ class SetupTest(unittest.IsolatedAsyncioTestCase):
             self.hass.states.get(self.entity_ids(second)["sensor"]).state, "pending"
         )
 
+    async def test_actions_without_active_incident(self) -> None:
+        """Actions work without a local alarm or a matching provider incident."""
+        first, _ = await self.add_service("First", REPLY_A, "CAR")
+        second, _ = await self.add_service("Second", REPLY_B, "FEET")
+        await self.alarm(second)
+        ids = self.entity_ids(first)
+        self.provider_handler = lambda request: httpx.Response(
+            200, text=" Updated MissionStatus: kein passender Einsatz aktiv\n"
+        )
+        device_id = er.async_get(self.hass).async_get(ids["binary_sensor"]).device_id
+        for active in (False, True):
+            with self.subTest(local_alarm_active=active):
+                if active:
+                    await self.alarm(first)
+                await self.action("accept", first)
+                self.assertEqual(self.hass.states.get(ids["sensor"]).state, "accepted")
+                self.assertEqual(
+                    self.hass.states.get(ids["binary_sensor"]).state,
+                    "on" if active else "off",
+                )
+                await self.hass.services.async_call(
+                    "ff_agent", "reject", {"device_id": device_id}, blocking=True
+                )
+                await self.hass.async_block_till_done()
+                self.assertEqual(
+                    self.hass.states.get(ids["binary_sensor"]).state, "off"
+                )
+                self.assertIsNone(
+                    self.hass.states.get(ids["binary_sensor"]).attributes["expires_at"]
+                )
+                self.assertEqual(self.hass.states.get(ids["sensor"]).state, "rejected")
+                await self.action("end_alarm", first)
+                self.assertEqual(
+                    self.hass.states.get(ids["binary_sensor"]).state, "off"
+                )
+                self.assertEqual(self.hass.states.get(ids["sensor"]).state, "rejected")
+                self.assertEqual(
+                    self.hass.states.get(
+                        self.entity_ids(second)["binary_sensor"]
+                    ).state,
+                    "on",
+                )
+        self.assertTrue(await self.hass.config_entries.async_reload(first.entry_id))
+        await self.hass.async_block_till_done()
+        self.assertEqual(self.hass.states.get(ids["binary_sensor"]).state, "off")
+        self.assertEqual(self.hass.states.get(ids["sensor"]).state, "rejected")
+        self.assertEqual(len(self.provider_requests), 4)
+
     async def test_inflight_reply_does_not_overwrite_a_new_alarm(self) -> None:
         """A late HTTP response must not resolve a newer local alarm."""
         entry, _ = await self.add_service("Race", REPLY_A, "CAR")
-        await self.alarm(entry)
-        started = asyncio.Event()
-        finish = asyncio.Event()
+        for decision, body in (
+            ("accept", "OK"),
+            ("reject", "Updated MissionStatus: kein passender Einsatz aktiv"),
+        ):
+            with self.subTest(decision=decision):
+                await self.alarm(entry)
+                started = asyncio.Event()
+                finish = asyncio.Event()
 
-        async def delayed(request):
-            started.set()
-            await finish.wait()
-            return httpx.Response(200, text="OK")
+                async def delayed(request, started=started, finish=finish, body=body):
+                    started.set()
+                    await finish.wait()
+                    return httpx.Response(200, text=body)
 
-        self.provider_handler = delayed
-        reply = asyncio.create_task(self.action("accept", entry))
-        await started.wait()
-        await self.hass.services.async_call(
-            "ff_agent",
-            "end_alarm",
-            {"entity_id": self.entity_ids(entry)["binary_sensor"]},
-            blocking=True,
-        )
-        await webhook.async_handle_webhook(
-            self.hass, entry.data["webhook_id"], MockRequest(b"", "test", method="GET")
-        )
-        finish.set()
-        with self.assertRaises(HomeAssistantError):
-            await reply
-        self.assertEqual(
-            self.hass.states.get(self.entity_ids(entry)["sensor"]).state, "pending"
-        )
+                self.provider_handler = delayed
+                reply = asyncio.create_task(self.action(decision, entry))
+                await started.wait()
+                await self.hass.services.async_call(
+                    "ff_agent",
+                    "end_alarm",
+                    {"entity_id": self.entity_ids(entry)["binary_sensor"]},
+                    blocking=True,
+                )
+                await webhook.async_handle_webhook(
+                    self.hass,
+                    entry.data["webhook_id"],
+                    MockRequest(b"", "test", method="GET"),
+                )
+                finish.set()
+                with self.assertRaises(HomeAssistantError):
+                    await reply
+                self.assertEqual(
+                    self.hass.states.get(self.entity_ids(entry)["sensor"]).state,
+                    "pending",
+                )
+                self.assertEqual(
+                    self.hass.states.get(self.entity_ids(entry)["binary_sensor"]).state,
+                    "on",
+                )
 
     async def test_independent_services_webhooks_and_reconfiguration(self) -> None:
         """Route alarms separately; retain a secret across edits and reloads."""
