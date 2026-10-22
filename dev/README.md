@@ -36,8 +36,12 @@ werden; eine Aufnahme in den Standardkatalog ist nicht erfolgt. HACS wird für d
 lokale Entwicklung weder installiert noch benötigt. Code und eigene Dokumentation
 stehen unter der [MIT-Lizenz](../LICENSE); das Logo ist davon ausgenommen, siehe
 [Rechtehinweise](../NOTICES.md). Eine Namensnennung ersetzt keine Nutzungserlaubnis.
-Version 0.1.1 ist zum kontrollierten Praxistest vorgesehen. Es werden in diesem
-Schritt keine Tags, GitHub-Releases oder Images veröffentlicht.
+Version 0.1.1 ist zum kontrollierten Praxistest vorgesehen. Neue Versionen werden
+nach erfolgreicher Prüfung als reguläres GitHub-Release veröffentlicht. Tag und
+Manifest-Version stimmen überein und tragen kein `v`-Präfix, zum Beispiel `0.1.1`.
+HACS nutzt diese Releases für versionierte Updates, auch bei Custom-Repositories.
+Es werden keine Container-Images veröffentlicht und keine HACS-Katalogeinreichung
+vorgenommen.
 Lokale Brand-Icons liegen unter `custom_components/ff_agent/brand/`.
 Die [Endnutzeranleitung](../README.md) enthält die vorbereiteten offiziellen
 My-Home-Assistant-Buttons für HACS und den Config Flow. Der HACS-Link nutzt

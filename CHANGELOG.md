@@ -13,6 +13,8 @@
   public reverse-proxy URLs no longer receive it merely because HA has no
   configured external URL. Keep warnings for local hostnames and non-public IPs.
 - Update the English/German usage and upgrade instructions for version 0.1.1.
+- Publish versioned GitHub releases without a `v` prefix and document switching
+  existing HACS branch installations to release-based updates.
 
 ## 0.1.0
 

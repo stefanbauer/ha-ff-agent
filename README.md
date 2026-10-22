@@ -60,9 +60,12 @@ No YAML configuration is needed to add your services.
 
 ### Update to 0.1.1
 
-Open FF Agent in HACS and download the latest repository state. If no update is
-offered for your `main` installation, use **Redownload** in its menu. For a manual
-installation, replace the integration folder with the current files.
+HACS periodically checks for new GitHub releases and offers updates even for this
+custom repository; inclusion in the default catalog is not required.
+If you previously installed `main`, open FF Agent in HACS, use **Redownload** and
+select release **0.1.1** instead of `main` to follow versioned releases.
+For a manual installation, replace the integration folder with the files from the
+[latest release](https://github.com/stefanbauer/ha-ff-agent/releases/latest).
 Restart Home Assistant, then reload your browser to see the new action names.
 Existing organizations, webhooks, buttons and automations remain valid:
 `ff_agent.accept`, `ff_agent.reject` and `ff_agent.end_alarm` have not changed.
@@ -265,11 +268,15 @@ auf ihrer Seite. Zum Hinzufügen der Dienste ist keine YAML-Konfiguration nötig
 
 ### Auf 0.1.1 aktualisieren
 
-Öffne FF Agent in HACS und lade den neuesten Repository-Stand herunter. Falls für
-deine Installation aus `main` kein Update angeboten wird, nutze im Menü
-**Erneut herunterladen**. Bei manueller Installation ersetze den Integrationsordner
-durch die aktuellen Dateien. Starte Home Assistant neu und lade danach den Browser
-neu, damit die neuen Aktionsnamen angezeigt werden.
+HACS prüft regelmäßig auf neue GitHub-Releases und bietet auch für dieses
+benutzerdefinierte Repository Updates an; die Aufnahme in den Standardkatalog ist
+dafür nicht erforderlich. Falls du bisher `main` installiert hast, öffne FF Agent
+in HACS, nutze **Erneut herunterladen** und wähle Release **0.1.1** statt `main`,
+um versionierten Releases zu folgen. Bei manueller Installation ersetze den
+Integrationsordner durch die Dateien aus dem
+[neuesten Release](https://github.com/stefanbauer/ha-ff-agent/releases/latest).
+Starte Home Assistant neu und lade danach den Browser neu, damit die neuen
+Aktionsnamen angezeigt werden.
 Bestehende Organisationen, Webhooks, Buttons und Automationen bleiben gültig:
 `ff_agent.accept`, `ff_agent.reject` und `ff_agent.end_alarm` sind unverändert.
 Die Änderungen dieser Version stehen im [Changelog](CHANGELOG.md).

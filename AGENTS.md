@@ -17,5 +17,9 @@
   after Python changes. Runtime state lives in the project-specific Docker volume.
 - Full reset is destructive to this test instance. Do not execute it against an
   existing user's state without explicit approval. Never use global Docker prune.
-- Keep user-visible changes in `CHANGELOG.md`. Publishing, releases, tags and
-  changing repository visibility require explicit authorization.
+- Keep user-visible changes in `CHANGELOG.md`.
+- Stefan has authorized publishing integration versions as regular GitHub releases.
+  After successful validation, publish the version with a matching tag and manifest
+  version, without a `v` prefix (for example `0.1.1`). Do not publish every commit.
+  HACS default-catalog submissions, container-image publication and repository
+  visibility changes still require explicit authorization.
