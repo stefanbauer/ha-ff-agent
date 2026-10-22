@@ -5,6 +5,8 @@ from pathlib import Path
 from aiohttp import web
 from homeassistant.components import frontend, webhook
 from homeassistant.components.http import StaticPathConfig
+from homeassistant.components.lovelace.const import LOVELACE_DATA
+from homeassistant.components.lovelace.resources import ResourceStorageCollection
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_WEBHOOK_ID, Platform
 from homeassistant.core import HomeAssistant
@@ -36,9 +38,29 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         ]
     )
     integration = await async_get_integration(hass, DOMAIN)
-    frontend.add_extra_js_url(
-        hass, f"/ff_agent/ff-agent-card.js?v={integration.version}"
-    )
+    card_path = "/ff_agent/ff-agent-card.js"
+    card_url = f"{card_path}?v={integration.version}"
+    frontend.add_extra_js_url(hass, card_url)
+
+    # Lovelace also loads resources independently of the initial HTML document.
+    # Keep YAML-managed resources untouched; the extra module still loads there.
+    resources = hass.data[LOVELACE_DATA].resources
+    if isinstance(resources, ResourceStorageCollection):
+        await resources.async_get_info()
+        existing = next(
+            (
+                item
+                for item in resources.async_items()
+                if item["url"].split("?", 1)[0] == card_path
+            ),
+            None,
+        )
+        if existing is None:
+            await resources.async_create_item({"res_type": "module", "url": card_url})
+        elif existing["url"] != card_url or existing["type"] != "module":
+            await resources.async_update_item(
+                existing["id"], {"res_type": "module", "url": card_url}
+            )
     return True
 
 

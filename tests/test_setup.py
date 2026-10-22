@@ -15,6 +15,7 @@ from homeassistant.auth import auth_manager_from_config
 from homeassistant.bootstrap import async_load_base_functionality
 from homeassistant.components import webhook
 from homeassistant.components.http import current_request
+from homeassistant.components.lovelace.const import LOVELACE_DATA
 from homeassistant.config_entries import ConfigEntries
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
@@ -79,6 +80,14 @@ class SetupTest(unittest.IsolatedAsyncioTestCase):
         self.assertIn("ff_agent", self.hass.config.components)
         self.assertEqual(self.hass.states.async_entity_ids("ff_agent"), [])
         self.assertNotIn("ff_agent", self.hass.services.async_services())
+        # Discover the module even when the original HTML had no extra import.
+        resources = self.hass.data[LOVELACE_DATA].resources
+        await resources.async_get_info()
+        integration = await loader.async_get_integration(self.hass, "ff_agent")
+        self.assertEqual(
+            [(item["type"], item["url"]) for item in resources.async_items()],
+            [("module", f"/ff_agent/ff-agent-card.js?v={integration.version}")],
+        )
         async with ClientSession() as client:
             with patch(
                 "homeassistant.components.frontend.onboarding.async_is_onboarded",

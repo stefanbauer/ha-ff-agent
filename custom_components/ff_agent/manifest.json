@@ -3,10 +3,10 @@
   "name": "FF Agent",
   "codeowners": ["@stefanbauer"],
   "config_flow": true,
-  "dependencies": ["frontend", "http", "webhook"],
+  "dependencies": ["frontend", "http", "lovelace", "webhook"],
   "documentation": "https://github.com/stefanbauer/ha-ff-agent",
   "integration_type": "service",
   "iot_class": "cloud_push",
   "issue_tracker": "https://github.com/stefanbauer/ha-ff-agent/issues",
-  "version": "0.2.1"
+  "version": "0.2.2"
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.2
+
+- Automatically register the bundled card as a Lovelace module resource as well
+  as an extra frontend module, so dashboard discovery does not rely solely on
+  the initial HTML import. No manual resource registration is required.
+- Update existing card-resource URLs on upgrades instead of adding duplicates;
+  preserve unrelated resources, YAML-managed resources and dashboard layouts.
+- Keep card appearance, alarm state and reply actions unchanged. Restart Home
+  Assistant and fully reload the browser after updating.
+
 ## 0.2.1
 
 - Make the bundled card more compact and closer to Mushroom's typography,

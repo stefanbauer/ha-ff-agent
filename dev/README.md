@@ -10,7 +10,7 @@ Pro Dienst gibt es einen Einsatz-Binary-Sensor, einen Rückmeldestatus und die
 Aktionen Einsatz zusagen, Einsatz absagen und Einsatz beenden. Nur ausdrückliche Zu-/Absagen
 senden FF-Agent-Anfragen; automatisierte Tests verwenden ausschließlich Mock-HTTP.
 Die Dashboard-Karte wird mitgeliefert; Einsatzdetails werden nicht verarbeitet.
-Version `0.2.1` ist eine Entwicklungsversion;
+Version `0.2.2` ist eine Entwicklungsversion;
 `1.0.0` bleibt einer ersten vollständigen, stabilen Version vorbehalten.
 Die Integrationsoberfläche ist standardmäßig Englisch, bei deutscher HA-Sprache Deutsch.
 
@@ -37,7 +37,7 @@ werden; eine Aufnahme in den Standardkatalog ist nicht erfolgt. HACS wird für d
 lokale Entwicklung weder installiert noch benötigt. Code und eigene Dokumentation
 stehen unter der [MIT-Lizenz](../LICENSE); das Logo ist davon ausgenommen, siehe
 [Rechtehinweise](../NOTICES.md). Eine Namensnennung ersetzt keine Nutzungserlaubnis.
-Version 0.2.1 ist zum kontrollierten Praxistest vorgesehen. Neue Versionen werden
+Version 0.2.2 ist zum kontrollierten Praxistest vorgesehen. Neue Versionen werden
 nach erfolgreicher Prüfung als reguläres GitHub-Release veröffentlicht. Tag und
 Manifest-Version stimmen überein und tragen kein `v`-Präfix, zum Beispiel `0.1.1`.
 HACS nutzt diese Releases für versionierte Updates, auch bei Custom-Repositories.
@@ -172,8 +172,15 @@ Beenden löschen sie nicht. Bei alten Zuständen wird ein bekannter Rückmeldest
 externe Laufzeitabhängigkeiten. `async_setup` stellt das Modul und das vorhandene
 Brand-Icon als statische Dateien bereit und registriert es einmal über Home
 Assistants `frontend.add_extra_js_url`. Die Manifest-Version im Modul-URL-Parameter
-verhindert veralteten Browsercache nach einem Release. Kein Eingriff in
-Lovelace-Ressourcen oder Dashboard-Speicher, keine zweite HACS-Installation.
+verhindert veralteten Browsercache nach einem Release. Zusätzlich registriert die
+Integration das Modul automatisch in den speicherverwalteten Lovelace-Ressourcen,
+damit der Dashboard-Ladeweg nicht allein vom ursprünglichen HTML abhängt.
+Bei Updates wird die vorhandene Versions-URL ersetzt, kein doppelter Eintrag
+angelegt. Andere Ressourcen und Dashboard-Konfigurationen bleiben unverändert.
+YAML-verwaltete Ressourcen werden nicht bearbeitet; dort bleibt der zusätzliche
+HTML-Modulimport aktiv. Keine zweite HACS-Installation oder manuelle Einrichtung.
+Eine bereits geöffnete Browserseite muss nach dem HA-Neustart vollständig neu
+geladen werden; eine WebSocket-Wiederverbindung führt Modulimporte nicht erneut aus.
 
 Die Karte wählt den Rückmeldesensor anhand von Gerätezuordnung, Integration und
 Übersetzungsschlüssel aus dem Frontend-Entity-Registry-Abonnement. Umbenannte
