@@ -73,11 +73,11 @@
   },
   "services": {
     "accept": {
-      "name": "Accept",
+      "name": "Accept incident",
       "description": "Send acceptance for the selected organization using the configured transport and Home Assistant home coordinates, even without an active alarm. This contacts FF-Agent."
     },
     "reject": {
-      "name": "Reject",
+      "name": "Reject incident",
       "description": "Send rejection for the selected organization, even without an active alarm, and end the local alarm after HTTP delivery. No coordinates or transport are sent. This contacts FF-Agent."
     },
     "end_alarm": {

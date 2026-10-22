@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.1.1
 
+- Rename the reply actions to **Accept incident** / **Reject incident** in English
+  and **Einsatz zusagen** / **Einsatz absagen** in German. Keep End alarm /
+  Einsatz beenden and all action IDs unchanged for existing automations and buttons.
 - Allow Accept, Reject and End alarm without an active local or matching FF-Agent
   incident. An HTTP 2xx reply, including “kein passender Einsatz aktiv”, records
   the selected local decision; Reject also ends the local alarm. Preserve state
@@ -9,6 +12,10 @@
 - Classify the displayed webhook host before showing the local-test warning;
   public reverse-proxy URLs no longer receive it merely because HA has no
   configured external URL. Keep warnings for local hostnames and non-public IPs.
+- Update the English/German usage and upgrade instructions for version 0.1.1.
+
+## 0.1.0
+
 - Add per-organization alarm activity and reply-status entities, grouped under
   their own FF-Agent device, with English/German names and states.
 - End local alarms after four hours without extending the deadline for repeated
@@ -18,7 +25,7 @@
   Successful rejection also ends the local alarm and retains the rejected status;
   failed or unconfirmed rejection leaves it active. Ending an alarm manually is
   local only and retains its last reply.
-- Keep reply status unchanged on failed/unconfirmed requests,
+- Keep reply status unchanged on failed/unconfirmed requests or no active incident,
   never follow redirects or retry automatically, and prevent late replies from
   overwriting a newer alarm.
 - Add multiple named FF Agent services with a UI configuration flow, editable

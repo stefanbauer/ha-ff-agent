@@ -73,11 +73,11 @@
   },
   "services": {
     "accept": {
-      "name": "Zusagen",
+      "name": "Einsatz zusagen",
       "description": "Zusage für die ausgewählte Organisation mit konfigurierter Anreiseart und Home-Assistant-Zuhause-Koordinaten senden, auch ohne aktiven Einsatz. Kontaktiert FF-Agent."
     },
     "reject": {
-      "name": "Absagen",
+      "name": "Einsatz absagen",
       "description": "Absage für die ausgewählte Organisation senden, auch ohne aktiven Einsatz, und den lokalen Einsatz nach HTTP-Übermittlung beenden. Keine Koordinaten oder Anreiseart werden gesendet. Kontaktiert FF-Agent."
     },
     "end_alarm": {

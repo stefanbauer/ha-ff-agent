@@ -15,7 +15,7 @@ are **not implemented yet**. This integration does not replace official alarm sy
 
 ### Installation
 
-Requires **Home Assistant 2026.10.2 or newer**. Version **0.1.0** is an early
+Requires **Home Assistant 2026.10.2 or newer**. Version **0.1.1** is an early
 development version, not a finished alarm integration. HACS is optional.
 Before testing on your main Home Assistant instance, create a backup. Keep your
 official alarm channels enabled; test reply actions only when a real response is intended.
@@ -57,6 +57,16 @@ the wrong instance, correct that address; the menu paths above work without link
 If you are using the prepared local development instance, the integration is
 already installed. Start with **Add integration** or **Add service** on its page.
 No YAML configuration is needed to add your services.
+
+### Update to 0.1.1
+
+Open FF Agent in HACS and download the latest repository state. If no update is
+offered for your `main` installation, use **Redownload** in its menu. For a manual
+installation, replace the integration folder with the current files.
+Restart Home Assistant, then reload your browser to see the new action names.
+Existing organizations, webhooks, buttons and automations remain valid:
+`ff_agent.accept`, `ff_agent.reject` and `ff_agent.end_alarm` have not changed.
+See the [changelog](CHANGELOG.md) for the changes in this version.
 
 ### Add an organization
 
@@ -132,17 +142,17 @@ When an alarm ends, the last reply is retained until the next alarm.
 Under **Developer tools → Actions**, choose one of the following and target the
 organization's **Alarm active** entity (or its FF-Agent device):
 
-- **FF Agent: Accept** (`ff_agent.accept`): sends a real acceptance using the
+- **FF Agent: Accept incident** (`ff_agent.accept`): sends a real acceptance using the
   organization's saved UUID, transport and **Home Assistant home coordinates**.
   No phone tracking or current device location is used.
-- **FF Agent: Reject** (`ff_agent.reject`): sends a real rejection using the UUID
+- **FF Agent: Reject incident** (`ff_agent.reject`): sends a real rejection using the UUID
   only; no transport or coordinates. A successfully sent rejection also ends the
   local alarm, retaining **Rejected** as the reply status.
 - **FF Agent: End alarm** (`ff_agent.end_alarm`): turns the local binary sensor
   off immediately, retaining the reply status. **Sends nothing to FF-Agent.**
 
 All three actions work whether or not a local alarm or matching FF-Agent incident
-is active. Accept and Reject are never triggered automatically by a webhook.
+is active. **Accept incident** and **Reject incident** are never triggered automatically by a webhook.
 After HTTP 2xx, the selected reply is recorded locally, including when FF-Agent
 reports “no matching active incident”; Reject also ends the local alarm. Accept
 does not activate or end an alarm. A failed or unconfirmed request retains the
@@ -159,7 +169,8 @@ scripts and a future card; no scenes are needed.
 > redirects.
 
 To test safely, trigger the local webhook and then use **End alarm**; neither
-operation sends a reply. Only test Accept/Reject when you intend a real response.
+operation sends a reply. Only test **Accept incident** / **Reject incident** when
+you intend a real response.
 
 ### Change or remove a service
 
@@ -205,7 +216,7 @@ offiziellen Alarmierungswege.
 
 ### Installation
 
-Voraussetzung: **Home Assistant 2026.10.2 oder neuer**. Version **0.1.0** ist eine
+Voraussetzung: **Home Assistant 2026.10.2 oder neuer**. Version **0.1.1** ist eine
 frühe Entwicklungsversion, keine fertige Alarmintegration. HACS ist optional.
 Erstelle vor einem Test in deiner produktiven Home-Assistant-Instanz ein Backup.
 Lass die offiziellen Alarmierungswege aktiv; teste Rückmeldeaktionen nur, wenn
@@ -251,6 +262,17 @@ falsche Instanz, korrigiere diese Adresse. Die Menüwege oben funktionieren ohne
 In der vorbereiteten lokalen Entwicklungsinstanz ist die Integration bereits
 installiert. Beginne direkt mit **Integration hinzufügen** oder **Dienst hinzufügen**
 auf ihrer Seite. Zum Hinzufügen der Dienste ist keine YAML-Konfiguration nötig.
+
+### Auf 0.1.1 aktualisieren
+
+Öffne FF Agent in HACS und lade den neuesten Repository-Stand herunter. Falls für
+deine Installation aus `main` kein Update angeboten wird, nutze im Menü
+**Erneut herunterladen**. Bei manueller Installation ersetze den Integrationsordner
+durch die aktuellen Dateien. Starte Home Assistant neu und lade danach den Browser
+neu, damit die neuen Aktionsnamen angezeigt werden.
+Bestehende Organisationen, Webhooks, Buttons und Automationen bleiben gültig:
+`ff_agent.accept`, `ff_agent.reject` und `ff_agent.end_alarm` sind unverändert.
+Die Änderungen dieser Version stehen im [Changelog](CHANGELOG.md).
 
 ### Organisation hinzufügen
 
@@ -331,10 +353,10 @@ Unter **Entwicklerwerkzeuge → Aktionen** eine der folgenden Aktionen wählen u
 die Entität **Einsatz aktiv** der Organisation (oder ihr FF-Agent-Gerät) als Ziel
 auswählen:
 
-- **FF Agent: Zusagen** (`ff_agent.accept`): sendet eine echte Zusage mit der
+- **FF Agent: Einsatz zusagen** (`ff_agent.accept`): sendet eine echte Zusage mit der
   gespeicherten UUID, Anreiseart und den **Zuhause-Koordinaten aus Home Assistant**.
   Kein Handy-Tracking und keine aktuelle Geräteposition.
-- **FF Agent: Absagen** (`ff_agent.reject`): sendet eine echte Absage nur mit der
+- **FF Agent: Einsatz absagen** (`ff_agent.reject`): sendet eine echte Absage nur mit der
   UUID, ohne Anreiseart oder Koordinaten. Eine erfolgreich gesendete Absage beendet
   auch den lokalen Einsatz; der Rückmeldestatus bleibt **Abgesagt**.
 - **FF Agent: Einsatz beenden** (`ff_agent.end_alarm`): schaltet den lokalen

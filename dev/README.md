@@ -7,9 +7,9 @@ Lokale Entwicklungsbasis für eine Home-Assistant-Custom-Integration mit der Dom
 `ff_agent`. Mehrere benannte Dienste lassen sich über die Oberfläche einrichten,
 jeweils mit persönlicher Rückmelde-ID, Standard-Anreiseart und eigenem Alarm-Webhook.
 Pro Dienst gibt es einen Einsatz-Binary-Sensor, einen Rückmeldestatus und die
-Aktionen Zusagen, Absagen und Einsatz beenden. Nur ausdrückliche Zu-/Absagen
+Aktionen Einsatz zusagen, Einsatz absagen und Einsatz beenden. Nur ausdrückliche Zu-/Absagen
 senden FF-Agent-Anfragen; automatisierte Tests verwenden ausschließlich Mock-HTTP.
-**Noch keine Einsatzdetails oder eigene Dashboard-Karte.** Version `0.1.0` ist eine Entwicklungsversion;
+**Noch keine Einsatzdetails oder eigene Dashboard-Karte.** Version `0.1.1` ist eine Entwicklungsversion;
 `1.0.0` bleibt einer ersten vollständigen, stabilen Version vorbehalten.
 Die Integrationsoberfläche ist standardmäßig Englisch, bei deutscher HA-Sprache Deutsch.
 
@@ -36,7 +36,7 @@ werden; eine Aufnahme in den Standardkatalog ist nicht erfolgt. HACS wird für d
 lokale Entwicklung weder installiert noch benötigt. Code und eigene Dokumentation
 stehen unter der [MIT-Lizenz](../LICENSE); das Logo ist davon ausgenommen, siehe
 [Rechtehinweise](../NOTICES.md). Eine Namensnennung ersetzt keine Nutzungserlaubnis.
-Version 0.1.0 ist zum kontrollierten Praxistest vorgesehen. Es werden in diesem
+Version 0.1.1 ist zum kontrollierten Praxistest vorgesehen. Es werden in diesem
 Schritt keine Tags, GitHub-Releases oder Images veröffentlicht.
 Lokale Brand-Icons liegen unter `custom_components/ff_agent/brand/`.
 Die [Endnutzeranleitung](../README.md) enthält die vorbereiteten offiziellen
@@ -99,7 +99,7 @@ Oberfläche eingerichtet; HACS ist dafür nicht erforderlich.
    Geheimnis und darf nicht in Logs, Screenshots, Issues oder Git landen.
 4. Standard-Anreiseart auswählen: **Auto (CAR)**, **Fahrrad (BICYCLE)** oder
    **Zu Fuß (FEET)**. Vorgabe ist Auto.
-   Erst die Aktion Zusagen sendet Anreiseart und Home-Assistant-Zuhause-Koordinaten
+   Erst die Aktion Einsatz zusagen sendet Anreiseart und Home-Assistant-Zuhause-Koordinaten
    an FF-Agent; das Speichern der Konfiguration sendet nichts.
 5. Eigenen Webhook anzeigen lassen und den Dienst speichern. Für weitere
    Organisationen wiederholen; dieselbe Rückmelde-ID wird nicht doppelt angelegt.
